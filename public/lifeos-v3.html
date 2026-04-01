@@ -8,26 +8,26 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#0d0d10;--bg2:#15151a;--bg3:#1c1c22;--bg4:#242430;--bg5:#2c2c3a;
-  --br:#28283a;--br2:#363648;
-  --tx:#f0f0f5;--tx2:#8888a0;--tx3:#48485e;
-  --acc:#7c6ef5;--acc2:#a090f8;--accg:rgba(124,110,245,.14);--accg2:rgba(124,110,245,.06);
-  --grn:#22c55e;--grng:rgba(34,197,94,.12);--grng2:rgba(34,197,94,.06);
-  --red:#ef4444;--redg:rgba(239,68,68,.12);
-  --amb:#f59e0b;--ambg:rgba(245,158,11,.12);
-  --blu:#3b82f6;--blug:rgba(59,130,246,.12);
-  --pnk:#ec4899;--pnkg:rgba(236,72,153,.12);
-  --r:12px;--rs:8px;--r2:16px;
-  --sh:0 4px 24px rgba(0,0,0,.4);
-  --sh2:0 8px 40px rgba(0,0,0,.5);
+  --bg:#0a0a12;--bg2:#12121c;--bg3:#1a1a28;--bg4:#222236;--bg5:#2a2a42;
+  --br:#1e1e35;--br2:#2e2e4a;
+  --tx:#f2f2fa;--tx2:#9090b0;--tx3:#50506e;
+  --acc:#8b7cf7;--acc2:#b0a0ff;--accg:rgba(139,124,247,.15);--accg2:rgba(139,124,247,.06);
+  --grn:#34d399;--grng:rgba(52,211,153,.12);--grng2:rgba(52,211,153,.06);
+  --red:#f87171;--redg:rgba(248,113,113,.12);
+  --amb:#fbbf24;--ambg:rgba(251,191,36,.12);
+  --blu:#60a5fa;--blug:rgba(96,165,250,.12);
+  --pnk:#f472b6;--pnkg:rgba(244,114,182,.12);
+  --r:14px;--rs:10px;--r2:18px;
+  --sh:0 4px 30px rgba(0,0,0,.5);
+  --sh2:0 12px 48px rgba(0,0,0,.6);
 }
 body.lm{
-  --bg:#f2f2f7;--bg2:#ffffff;--bg3:#ebebf2;--bg4:#dedee8;--bg5:#d2d2de;
-  --br:#dadadf;--br2:#c8c8d8;
+  --bg:#f4f4fb;--bg2:#ffffff;--bg3:#eeeef6;--bg4:#e0e0ec;--bg5:#d4d4e2;
+  --br:#dddde8;--br2:#ccccdc;
   --tx:#0d0d14;--tx2:#50506a;--tx3:#9090a8;
-  --sh:0 4px 24px rgba(0,0,0,.08);--sh2:0 8px 40px rgba(0,0,0,.12);
+  --sh:0 4px 24px rgba(0,0,0,.06);--sh2:0 8px 40px rgba(0,0,0,.1);
 }
-html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.5;overflow:hidden;}
+html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.55;overflow:hidden;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:var(--br2);border-radius:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
@@ -35,7 +35,7 @@ html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(
 .app{display:flex;height:100vh;position:relative;}
 
 /* ===== SIDEBAR ===== */
-.sb{width:224px;min-width:224px;background:var(--bg2);border-right:1px solid var(--br);display:flex;flex-direction:column;overflow:hidden;transition:transform .25s,width .25s,min-width .25s;z-index:60;}
+.sb{width:240px;min-width:240px;background:var(--bg2);border-right:1px solid var(--br);display:flex;flex-direction:column;overflow:hidden;transition:transform .25s,width .25s,min-width .25s;z-index:60;backdrop-filter:blur(12px);}
 .sb.closed{width:0;min-width:0;}
 @media(max-width:680px){
   .sb{position:fixed;top:0;bottom:0;left:0;transform:translateX(-100%);width:224px!important;min-width:224px!important;}
@@ -44,11 +44,11 @@ html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(
 }
 .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:59;}
 .sb-logo{padding:16px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.logo-ic{width:30px;height:30px;background:linear-gradient(135deg,var(--acc),var(--pnk));border-radius:8px;display:grid;place-items:center;font-size:14px;flex-shrink:0;}
+.logo-ic{width:34px;height:34px;background:linear-gradient(135deg,var(--acc),var(--pnk));border-radius:10px;display:grid;place-items:center;font-size:16px;flex-shrink:0;box-shadow:0 4px 16px rgba(139,124,247,.35);}
 .logo-tx{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;white-space:nowrap;}
 .logo-tx span{color:var(--acc2);}
 .sb-sec{padding:14px 12px 3px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);white-space:nowrap;flex-shrink:0;}
-.ni{display:flex;align-items:center;gap:9px;padding:8px 10px;margin:1px 6px;border-radius:var(--rs);cursor:pointer;color:var(--tx2);font-size:13px;font-weight:500;transition:all .15s;position:relative;white-space:nowrap;flex-shrink:0;user-select:none;}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 12px;margin:2px 8px;border-radius:var(--rs);cursor:pointer;color:var(--tx2);font-size:13.5px;font-weight:500;transition:all .18s;position:relative;white-space:nowrap;flex-shrink:0;user-select:none;}
 .ni:hover{background:var(--bg3);color:var(--tx);}
 .ni.act{background:var(--accg);color:var(--acc2);}
 .ni.act::before{content:'';position:absolute;left:0;top:22%;height:56%;width:3px;background:var(--acc);border-radius:0 3px 3px 0;}
@@ -68,15 +68,15 @@ html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(
 
 /* ===== TOPBAR ===== */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
-.topbar{height:52px;min-height:52px;background:var(--bg2);border-bottom:1px solid var(--br);display:flex;align-items:center;padding:0 16px;gap:10px;}
+.topbar{height:56px;min-height:56px;background:var(--bg2);border-bottom:1px solid var(--br);display:flex;align-items:center;padding:0 20px;gap:12px;backdrop-filter:blur(12px);}
 .tb-ttl{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .srch{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--br);border-radius:var(--rs);padding:6px 10px;}
 .srch input{background:none;border:none;outline:none;color:var(--tx);font-size:13px;width:140px;font-family:'DM Sans',sans-serif;}
 .srch input::placeholder{color:var(--tx3);}
 @media(max-width:480px){.srch{display:none;}}
 .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--rs);border:none;cursor:pointer;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;transition:all .15s;white-space:nowrap;user-select:none;}
-.btn-p{background:var(--acc);color:#fff;}
-.btn-p:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-p{background:linear-gradient(135deg,var(--acc),var(--pnk));color:#fff;box-shadow:0 2px 12px rgba(139,124,247,.3);}
+.btn-p:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 4px 20px rgba(139,124,247,.4);}
 .btn-g{background:transparent;color:var(--tx2);border:1px solid var(--br);}
 .btn-g:hover{background:var(--bg3);color:var(--tx);}
 .btn-r{background:var(--redg);color:var(--red);border:1px solid transparent;}
@@ -85,13 +85,13 @@ html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(
 .btn-ic:hover{background:var(--bg3);color:var(--tx);}
 
 /* ===== CONTENT / PAGES ===== */
-.content{flex:1;overflow-y:auto;padding:20px;}
+.content{flex:1;overflow-y:auto;padding:24px;}
 .page{display:none;}
 .page.act{display:block;animation:fadeUp .22s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:none;}}
 
 /* ===== LAYOUT HELPERS ===== */
-.card{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:16px;}
+.card{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:18px;transition:all .2s;}.card:hover{border-color:var(--br2);}
 .ct{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:12px;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
@@ -105,7 +105,7 @@ html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(
 .streak-b{display:inline-flex;align-items:center;gap:4px;background:var(--ambg);color:var(--amb);font-weight:700;font-size:11px;padding:4px 10px;border-radius:99px;}
 
 /* ===== STAT CARDS ===== */
-.sc{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:16px;position:relative;overflow:hidden;}
+.sc{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:18px;position:relative;overflow:hidden;transition:all .2s;}.sc:hover{border-color:var(--br2);transform:translateY(-2px);box-shadow:var(--sh);}
 .sc-n{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1;letter-spacing:-.5px;}
 .sc-l{font-size:12px;color:var(--tx2);margin-top:5px;}
 .sc-t{font-size:11px;margin-top:6px;color:var(--grn);}
@@ -167,8 +167,8 @@ html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(
 .kb-card.dragging{opacity:.35;}
 
 /* ===== HABITS ===== */
-.hi{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:14px;transition:border-color .15s;}
-.hi:hover{border-color:var(--br2);}
+.hi{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:16px;transition:all .2s;}
+.hi:hover{border-color:var(--br2);transform:translateY(-2px);box-shadow:var(--sh);}
 .hi-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .hi-ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:18px;flex-shrink:0;}
 .hi-nm{font-weight:600;font-size:13px;}
@@ -195,7 +195,7 @@ html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(
 .h4{background:var(--grn);}
 
 /* ===== GOALS ===== */
-.gc{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:16px;border-top:3px solid var(--br);}
+.gc{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:18px;border-top:3px solid var(--br);transition:all .2s;}.gc:hover{transform:translateY(-2px);box-shadow:var(--sh);}
 .gc.blue{border-top-color:var(--blu);}
 .gc.green{border-top-color:var(--grn);}
 .gc.purple{border-top-color:var(--acc);}
@@ -238,14 +238,14 @@ html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(
 .en-opt.on{border-color:currentColor;}
 
 /* ===== INSIGHT CARDS ===== */
-.ins{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:14px;display:flex;gap:12px;align-items:flex-start;}
+.ins{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:16px;display:flex;gap:12px;align-items:flex-start;transition:all .2s;}.ins:hover{border-color:var(--br2);transform:translateY(-1px);}
 .ins-ic{width:36px;height:36px;background:var(--bg4);border-radius:10px;display:grid;place-items:center;font-size:18px;flex-shrink:0;}
 .ins-t{font-size:12px;color:var(--tx2);line-height:1.7;}
 .ins-t strong{color:var(--tx);}
 .ins-nm{font-weight:600;font-size:13px;margin-bottom:3px;}
 
 /* ===== POMODORO ===== */
-.pom-wrap{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:20px;text-align:center;}
+.pom-wrap{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:24px;text-align:center;}
 .pom-circle{width:140px;height:140px;margin:0 auto 16px;position:relative;}
 .pom-circle svg{transform:rotate(-90deg);position:absolute;top:0;left:0;}
 .pom-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
@@ -286,7 +286,7 @@ html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(
 /* ===== MODALS ===== */
 .mo{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:1000;display:none;place-items:center;}
 .mo.open{display:grid;}
-.mo-bx{background:var(--bg2);border:1px solid var(--br2);border-radius:var(--r2);padding:22px;width:92%;max-width:460px;animation:fadeUp .2s ease;max-height:92vh;overflow-y:auto;}
+.mo-bx{background:var(--bg2);border:1px solid var(--br2);border-radius:var(--r2);padding:24px;width:92%;max-width:460px;animation:fadeUp .25s ease;max-height:92vh;overflow-y:auto;box-shadow:var(--sh2);}
 .mo-ttl{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;}
 .mo-x{background:none;border:none;color:var(--tx3);font-size:22px;cursor:pointer;line-height:1;padding:0 4px;transition:color .15s;}
 .mo-x:hover{color:var(--tx);}
@@ -306,7 +306,7 @@ select.fi option{background:var(--bg3);}
 
 /* ===== TOAST ===== */
 .tw{position:fixed;bottom:20px;right:20px;z-index:2000;display:flex;flex-direction:column;gap:6px;pointer-events:none;}
-.toast{background:var(--bg3);border:1px solid var(--br2);border-radius:var(--rs);padding:10px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;min-width:220px;pointer-events:all;box-shadow:var(--sh);}
+.toast{background:var(--bg3);border:1px solid var(--br2);border-radius:var(--rs);padding:12px 16px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;min-width:240px;pointer-events:all;box-shadow:var(--sh2);backdrop-filter:blur(12px);}
 .toast.s{border-left:3px solid var(--grn);}
 .toast.i{border-left:3px solid var(--acc);}
 .toast.x{border-left:3px solid var(--amb);}
@@ -319,9 +319,9 @@ select.fi option{background:var(--bg3);}
 .empty-ic{font-size:32px;margin-bottom:8px;}
 
 /* ===== FAB ===== */
-.fab{position:fixed;bottom:20px;right:20px;width:46px;height:46px;background:linear-gradient(135deg,var(--acc),var(--pnk));border-radius:50%;border:none;color:#fff;font-size:22px;cursor:pointer;box-shadow:0 6px 20px rgba(124,110,245,.45);transition:all .2s;z-index:50;display:grid;place-items:center;user-select:none;}
-.fab:hover{transform:scale(1.12);}
-.fab:active{transform:scale(.95);}
+.fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;background:linear-gradient(135deg,var(--acc),var(--pnk));border-radius:50%;border:none;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 8px 28px rgba(139,124,247,.45);transition:all .25s;z-index:50;display:grid;place-items:center;user-select:none;}
+.fab:hover{transform:scale(1.15) rotate(90deg);box-shadow:0 10px 36px rgba(139,124,247,.55);}
+.fab:active{transform:scale(.92);}
 
 /* ===== CONFETTI ===== */
 .confetti-piece{position:fixed;width:8px;height:8px;border-radius:2px;pointer-events:none;z-index:9999;animation:confettiFall 1.2s ease-in forwards;}
@@ -365,17 +365,13 @@ select.fi option{background:var(--bg3);}
   <div class="ni" data-page="pomodoro" onclick="nav('pomodoro',this)"><span class="ni-ic">🍅</span>Pomodoro</div>
   <div class="ni" data-page="insights" onclick="nav('insights',this)"><span class="ni-ic">🧠</span>Inteligência</div>
   <div class="ni" data-page="achievements" onclick="nav('achievements',this)"><span class="ni-ic">🏆</span>Conquistas</div>
+  <div style="flex:1;"></div>
   <div class="sb-bot">
-    <div class="xp-row">
-      <span style="color:var(--tx3);">Nível <strong id="lvl-n" style="color:var(--acc2);">1</strong></span>
-      <span style="color:var(--acc2);" id="xp-l">0 / 2.000 XP</span>
-    </div>
-    <div class="xp-bar"><div class="xp-f" id="xp-f" style="width:0%"></div></div>
     <div class="usr">
       <div class="av">L</div>
       <div style="overflow:hidden;">
-        <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Life OS User</div>
-        <div style="font-size:10px;color:var(--acc2);">🏆 Nível <span id="lvl-n2">1</span></div>
+        <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Life OS User</div>
+        <div style="font-size:11px;color:var(--tx2);">Produtividade pessoal</div>
       </div>
       <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Alternar tema"></button>
     </div>
@@ -667,7 +663,7 @@ select.fi option{background:var(--bg3);}
           <option value="tasks">Tarefas concluídas</option>
           <option value="streak">Streak de hábito (dias)</option>
           <option value="goals">Metas a 100%</option>
-          <option value="xp">XP acumulado</option>
+          <option value="manual">Conquista manual</option>
           <option value="manual">Conquista manual</option>
         </select>
       </div>
@@ -734,8 +730,7 @@ const ACHIEVEMENTS_DEF = [
   {id:'five_habits',icon:'💪',name:'Máquina de hábitos',desc:'Tenha 5 hábitos ativos',cond:s=>s.habits.length>=5},
   {id:'first_goal',icon:'🎯',name:'Com objetivo',desc:'Crie sua primeira meta',cond:s=>s.goals.length>=1},
   {id:'goal_100',icon:'🌟',name:'Meta alcançada!',desc:'Leve uma meta a 100%',cond:s=>s.goals.some(g=>g.progress>=100)},
-  {id:'level5',icon:'⚡',name:'Nível 5',desc:'Alcance o nível 5',cond:s=>s.level>=5},
-  {id:'level10',icon:'🚀',name:'Nível 10',desc:'Alcance o nível 10',cond:s=>s.level>=10},
+  {id:'pom5',icon:'🍅',name:'Foco total',desc:'Complete 5 sessões Pomodoro',cond:s=>s.pomSessions>=5},
   {id:'pom5',icon:'🍅',name:'Foco total',desc:'Complete 5 sessões Pomodoro',cond:s=>s.pomSessions>=5},
   {id:'all_habits',icon:'🌈',name:'Dia perfeito',desc:'Conclua todos os hábitos em um dia',cond:s=>s.habits.length>0&&s.habits.every(h=>h.doneToday)},
 ];
@@ -912,7 +907,7 @@ function renderDash(){
     <div class="sc"><div style="font-size:18px;margin-bottom:6px;">✅</div><div class="sc-n">${doneT.length}/${todayT.length}</div><div class="sc-l">Tarefas hoje</div><div class="sc-t">${tPct}% concluído</div><div class="pb"><div class="pf g-pf" style="width:${tPct}%"></div></div></div>
     <div class="sc"><div style="font-size:18px;margin-bottom:6px;">🔁</div><div class="sc-n">${doneH.length}/${S.habits.length}</div><div class="sc-l">Hábitos hoje</div><div class="sc-t">${hPct}% feitos</div><div class="pb"><div class="pf b-pf" style="width:${hPct}%"></div></div></div>
     <div class="sc"><div style="font-size:18px;margin-bottom:6px;">🎯</div><div class="sc-n">${S.goals.length}</div><div class="sc-l">Metas ativas</div><div class="sc-t">${avgG}% médio</div><div class="pb"><div class="pf am-pf" style="width:${avgG}%"></div></div></div>
-    <div class="sc"><div style="font-size:18px;margin-bottom:6px;">${overdue>0?'⚠️':'⚡'}</div><div class="sc-n" style="${overdue>0?'color:var(--red);':''}">${overdue>0?overdue:S.xp.toLocaleString('pt-BR')}</div><div class="sc-l">${overdue>0?'Tarefas atrasadas':'XP acumulado'}</div><div class="sc-t" style="${overdue>0?'color:var(--red);':''}">Nível ${S.level}</div><div class="pb"><div class="pf a-pf" style="width:${Math.round((S.xp%LEVEL_XP)/LEVEL_XP*100)}%"></div></div></div>
+    <div class="sc"><div style="font-size:18px;margin-bottom:6px;">${overdue>0?'⚠️':'📊'}</div><div class="sc-n" style="${overdue>0?'color:var(--red);':''}">${overdue>0?overdue:S.projects.length}</div><div class="sc-l">${overdue>0?'Tarefas atrasadas':'Projetos ativos'}</div><div class="sc-t" style="${overdue>0?'color:var(--red);':''}">🔥 ${S.streak} dias streak</div></div>
   `;
 
   // Week chart — improved with value labels and today highlight
@@ -1247,7 +1242,7 @@ function renderProjects(){
 function toggleMilestone(projId, mi){
   const p=S.projects.find(p=>p.id===projId); if(!p||!p.milestones) return;
   p.milestones[mi].done=!p.milestones[mi].done;
-  if(p.milestones[mi].done){ addXP(15); toast(`✅ Marco concluído! +15 XP`,'s'); checkAchievements(); }
+  if(p.milestones[mi].done){ toast(`✅ Marco concluído!`,'s'); checkAchievements(); }
   saveState(); renderProjects();
 }
 
@@ -1321,9 +1316,9 @@ function pomComplete(){
   updatePomDisplay();
   if(pomMode==='focus'){
     S.pomSessions++;
-    addXP(50);
     saveState();
-    toast('🍅 Sessão de foco concluída! +50 XP','x');
+    toast('🍅 Sessão de foco concluída!','x');
+    spawnConfetti();
     spawnConfetti();
     renderPomDots();
     renderPomStats();
@@ -1370,7 +1365,7 @@ function renderPomStats(){
   el.innerHTML = `
     <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--tx2);">Sessões totais</span><strong>${S.pomSessions}</strong></div>
     <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--tx2);">Tempo focado</span><strong>${Math.round(S.pomSessions*25)} min</strong></div>
-    <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--tx2);">XP de sessões</span><strong style="color:var(--acc);">${S.pomSessions*50} XP</strong></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--tx2);">Horas de foco</span><strong style="color:var(--acc);">${(S.pomSessions*25/60).toFixed(1)}h</strong></div>
   `;
 }
 
@@ -1552,13 +1547,12 @@ function toggleTask(id){
   t.done = !t.done;
   if(t.done){
     t.status = 'done_kb';
-    addXP(20);
     // Update week data
     const dow = new Date().getDay();
     const dayIdx = dow===0?6:dow-1;
     S.weekData[dayIdx]++;
     spawnConfetti();
-    toast(`✅ "${t.title.slice(0,28)}" concluída! +20 XP`,'s');
+    toast(`✅ "${t.title.slice(0,28)}" concluída!`,'s');
     checkAchievements();
   } else {
     t.status = 'todo';
@@ -1569,7 +1563,7 @@ function toggleTask(id){
 function toggleSub(tid, si){
   const t = S.tasks.find(t=>t.id===tid); if(!t) return;
   t.subsDone[si] = !t.subsDone[si];
-  if(t.subsDone[si]){ addXP(5); toast('✅ Subtarefa concluída! +5 XP','s'); }
+  if(t.subsDone[si]){ toast('✅ Subtarefa concluída!','s'); }
   saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash');
 }
 
@@ -1581,8 +1575,7 @@ function toggleHabit(id){
     h.lastDone = TODAY;
     // update hist
     h.hist[h.hist.length-1] = 4;
-    addXP(30);
-    toast(`🔥 ${h.name} feito! +30 XP`,'s');
+    toast(`🔥 ${h.name} feito!`,'s');
     checkAchievements();
   } else {
     h.streak = Math.max(0,h.streak-1);
@@ -1596,7 +1589,7 @@ function toggleGStep(gid, si){
   g.steps[si].done = !g.steps[si].done;
   const dn = g.steps.filter(s=>s.done).length;
   g.progress = g.steps.length ? Math.round(dn/g.steps.length*100) : 0;
-  if(g.steps[si].done){ addXP(25); toast(`🎯 Etapa concluída! +25 XP`,'s'); checkAchievements(); }
+  if(g.steps[si].done){ toast(`🎯 Etapa concluída!`,'s'); checkAchievements(); }
   saveState(); renderGoals();
 }
 
@@ -1607,23 +1600,10 @@ function changeProjStatus(id, status){
 }
 
 // ============================================================
-// XP & LEVEL
+// (XP system removed)
 // ============================================================
 function addXP(amt){
-  S.xp += amt;
-  const pct = Math.min(100,Math.round((S.xp%LEVEL_XP)/LEVEL_XP*100));
-  const f=document.getElementById('xp-f'); if(f) f.style.width=pct+'%';
-  const l=document.getElementById('xp-l'); if(l) l.textContent=`${S.xp.toLocaleString('pt-BR')} / ${LEVEL_XP.toLocaleString('pt-BR')} XP`;
-  const newLevel = Math.floor(S.xp/LEVEL_XP)+1;
-  if(newLevel>S.level){
-    S.level = newLevel;
-    const n=document.getElementById('lvl-n'); if(n) n.textContent=S.level;
-    const n2=document.getElementById('lvl-n2'); if(n2) n2.textContent=S.level;
-    toast(`🏆 LEVEL UP! Você é agora Nível ${S.level}!`,'x');
-    spawnConfetti();
-    checkAchievements();
-  }
-  saveState();
+  // XP system removed — function kept as no-op for compatibility
 }
 
 function updateBadge(){
@@ -1722,7 +1702,7 @@ function saveTask(){
       date:document.getElementById('t-date').value,tag:document.getElementById('t-tag').value,
       proj:parseInt(document.getElementById('t-proj').value)||0,status:document.getElementById('t-status').value,
       subs,subsDone:subs.map(()=>false),recur:document.getElementById('t-recur').value});
-    addXP(5); toast('📝 Tarefa criada! +5 XP','s');
+    toast('📝 Tarefa criada!','s');
   }
   closeMo('mo-task'); saveState();
   render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash'); updateBadge();
@@ -1739,7 +1719,7 @@ function saveHabit(){
   S.habits.push({id:uid(),name,emoji:document.getElementById('h-emoji').value.trim()||'⭐',streak:0,color:selColor,
     type:document.getElementById('h-type').value,freq:document.getElementById('h-freq').value,
     doneToday:false,lastDone:'',hist:Array(35).fill(0)});
-  addXP(10); toast(`🔁 "${name}" criado! +10 XP`,'s');
+  toast(`🔁 "${name}" criado!`,'s');
   closeMo('mo-habit'); saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash');
   checkAchievements();
 }
@@ -1758,7 +1738,7 @@ function saveGoal(){
     type:document.getElementById('g-type').value,
     progress:Math.max(0,Math.min(100,parseInt(document.getElementById('g-prog').value)||0)),
     color:document.getElementById('g-color').value,steps});
-  addXP(15); toast(`🎯 Meta "${title}" criada! +15 XP`,'s');
+  toast(`🎯 Meta "${title}" criada!`,'s');
   closeMo('mo-goal'); saveState(); renderGoals(); checkAchievements();
 }
 
@@ -1771,7 +1751,7 @@ function saveProj(){
   const name=document.getElementById('p-name').value.trim();
   if(!name){ toast('⚠️ Digite um nome!','e'); return; }
   S.projects.push({id:uid(),name,desc:document.getElementById('p-desc').value,status:document.getElementById('p-status').value});
-  updProjSel(); addXP(10); toast(`🗂️ "${name}" criado! +10 XP`,'s');
+  updProjSel(); toast(`🗂️ "${name}" criado!`,'s');
   closeMo('mo-proj'); saveState(); renderProjects();
 }
 
@@ -1861,13 +1841,7 @@ applyTheme();
 updateBadge();
 
 // Apply XP/level from saved state
-(function initXP(){
-  const pct=Math.min(100,Math.round((S.xp%LEVEL_XP)/LEVEL_XP*100));
-  const xpf=document.getElementById('xp-f'); if(xpf) xpf.style.width=pct+'%';
-  const xpl=document.getElementById('xp-l'); if(xpl) xpl.textContent=`${S.xp.toLocaleString('pt-BR')} / ${LEVEL_XP.toLocaleString('pt-BR')} XP`;
-  const lvln=document.getElementById('lvl-n'); if(lvln) lvln.textContent=S.level||1;
-  const lvln2=document.getElementById('lvl-n2'); if(lvln2) lvln2.textContent=S.level||1;
-})();
+// XP init removed
 
 // Ensure projects have milestones array
 S.projects.forEach(p=>{ if(!p.milestones) p.milestones=[]; });
