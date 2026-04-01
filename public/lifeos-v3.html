@@ -1575,8 +1575,7 @@ function toggleHabit(id){
     h.lastDone = TODAY;
     // update hist
     h.hist[h.hist.length-1] = 4;
-    addXP(30);
-    toast(`🔥 ${h.name} feito! +30 XP`,'s');
+    toast(`🔥 ${h.name} feito!`,'s');
     checkAchievements();
   } else {
     h.streak = Math.max(0,h.streak-1);
