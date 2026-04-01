@@ -1365,7 +1365,7 @@ function renderPomStats(){
   el.innerHTML = `
     <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--tx2);">Sessões totais</span><strong>${S.pomSessions}</strong></div>
     <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--tx2);">Tempo focado</span><strong>${Math.round(S.pomSessions*25)} min</strong></div>
-    <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--tx2);">XP de sessões</span><strong style="color:var(--acc);">${S.pomSessions*50} XP</strong></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--tx2);">Horas de foco</span><strong style="color:var(--acc);">${(S.pomSessions*25/60).toFixed(1)}h</strong></div>
   `;
 }
 
