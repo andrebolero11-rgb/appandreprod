@@ -1719,7 +1719,7 @@ function saveHabit(){
   S.habits.push({id:uid(),name,emoji:document.getElementById('h-emoji').value.trim()||'⭐',streak:0,color:selColor,
     type:document.getElementById('h-type').value,freq:document.getElementById('h-freq').value,
     doneToday:false,lastDone:'',hist:Array(35).fill(0)});
-  addXP(10); toast(`🔁 "${name}" criado! +10 XP`,'s');
+  toast(`🔁 "${name}" criado!`,'s');
   closeMo('mo-habit'); saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash');
   checkAchievements();
 }
