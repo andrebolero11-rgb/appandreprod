@@ -1751,7 +1751,7 @@ function saveProj(){
   const name=document.getElementById('p-name').value.trim();
   if(!name){ toast('⚠️ Digite um nome!','e'); return; }
   S.projects.push({id:uid(),name,desc:document.getElementById('p-desc').value,status:document.getElementById('p-status').value});
-  updProjSel(); addXP(10); toast(`🗂️ "${name}" criado! +10 XP`,'s');
+  updProjSel(); toast(`🗂️ "${name}" criado!`,'s');
   closeMo('mo-proj'); saveState(); renderProjects();
 }
 
