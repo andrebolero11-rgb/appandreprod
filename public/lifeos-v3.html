@@ -1589,7 +1589,7 @@ function toggleGStep(gid, si){
   g.steps[si].done = !g.steps[si].done;
   const dn = g.steps.filter(s=>s.done).length;
   g.progress = g.steps.length ? Math.round(dn/g.steps.length*100) : 0;
-  if(g.steps[si].done){ addXP(25); toast(`🎯 Etapa concluída! +25 XP`,'s'); checkAchievements(); }
+  if(g.steps[si].done){ toast(`🎯 Etapa concluída!`,'s'); checkAchievements(); }
   saveState(); renderGoals();
 }
 
