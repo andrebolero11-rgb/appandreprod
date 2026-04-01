@@ -1841,13 +1841,7 @@ applyTheme();
 updateBadge();
 
 // Apply XP/level from saved state
-(function initXP(){
-  const pct=Math.min(100,Math.round((S.xp%LEVEL_XP)/LEVEL_XP*100));
-  const xpf=document.getElementById('xp-f'); if(xpf) xpf.style.width=pct+'%';
-  const xpl=document.getElementById('xp-l'); if(xpl) xpl.textContent=`${S.xp.toLocaleString('pt-BR')} / ${LEVEL_XP.toLocaleString('pt-BR')} XP`;
-  const lvln=document.getElementById('lvl-n'); if(lvln) lvln.textContent=S.level||1;
-  const lvln2=document.getElementById('lvl-n2'); if(lvln2) lvln2.textContent=S.level||1;
-})();
+// XP init removed
 
 // Ensure projects have milestones array
 S.projects.forEach(p=>{ if(!p.milestones) p.milestones=[]; });
