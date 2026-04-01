@@ -1316,9 +1316,9 @@ function pomComplete(){
   updatePomDisplay();
   if(pomMode==='focus'){
     S.pomSessions++;
-    addXP(50);
     saveState();
-    toast('🍅 Sessão de foco concluída! +50 XP','x');
+    toast('🍅 Sessão de foco concluída!','x');
+    spawnConfetti();
     spawnConfetti();
     renderPomDots();
     renderPomStats();
