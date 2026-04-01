@@ -1896,6 +1896,11 @@ function openTaskMo(id){
   document.getElementById('t-tag').value = t?t.tag:'';
   document.getElementById('t-subs').value = t&&t.subs?t.subs.join('\n'):'';
   document.getElementById('t-recur').value = t?t.recur:'';
+  // Handle custom days for task
+  const showCustom = t && t.recur==='custom';
+  document.getElementById('t-custom-days-wrap').style.display = showCustom?'block':'none';
+  document.querySelectorAll('#t-custom-days .day-chip').forEach(c=>c.classList.remove('on'));
+  if(showCustom && t.customDays){ t.customDays.forEach(d=>{ const c=document.querySelector(`#t-custom-days .day-chip[data-day="${d}"]`); if(c) c.classList.add('on'); }); }
   document.getElementById('t-status').value = t?(t.status||'todo'):'todo';
   updProjSel();
   document.getElementById('t-proj').value = t?t.proj:0;
