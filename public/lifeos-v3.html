@@ -1702,7 +1702,7 @@ function saveTask(){
       date:document.getElementById('t-date').value,tag:document.getElementById('t-tag').value,
       proj:parseInt(document.getElementById('t-proj').value)||0,status:document.getElementById('t-status').value,
       subs,subsDone:subs.map(()=>false),recur:document.getElementById('t-recur').value});
-    addXP(5); toast('📝 Tarefa criada! +5 XP','s');
+    toast('📝 Tarefa criada!','s');
   }
   closeMo('mo-task'); saveState();
   render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash'); updateBadge();
