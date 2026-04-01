@@ -721,7 +721,33 @@ select.fi option{background:var(--bg3);}
   </div>
 </div>
 
-<!-- MODAL: ACHIEVEMENT -->
+<!-- MODAL: TAG MANAGER -->
+<div class="mo" id="mo-tags">
+  <div class="mo-bx">
+    <div class="mo-ttl">🏷️ Gerenciar Tags <button class="mo-x" onclick="closeMo('mo-tags')">×</button></div>
+    <div class="fg">
+      <label class="fl">Criar nova tag</label>
+      <div style="display:flex;gap:8px;">
+        <input class="fi" id="new-tag-name" placeholder="Nome da tag..." autocomplete="off" style="flex:1;">
+        <select class="fi" id="new-tag-color" style="width:auto;">
+          <option value="#8b7cf7">🟣 Roxo</option>
+          <option value="#3b82f6">🔵 Azul</option>
+          <option value="#22c55e">🟢 Verde</option>
+          <option value="#f59e0b">🟡 Âmbar</option>
+          <option value="#ec4899">🩷 Rosa</option>
+          <option value="#ef4444">🔴 Vermelho</option>
+          <option value="#60a5fa">💠 Celeste</option>
+        </select>
+        <button class="btn btn-p" onclick="addTag()">+</button>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="fl">Tags existentes</label>
+      <div class="tag-list" id="tag-list"></div>
+    </div>
+    <div class="mo-act"><button class="btn btn-g" onclick="closeMo('mo-tags')">Fechar</button></div>
+  </div>
+</div>
 <div class="mo" id="mo-ach">
   <div class="mo-bx">
     <div class="mo-ttl"><span id="mo-ach-ttl">Nova Recompensa</span><button class="mo-x" onclick="closeMo('mo-ach')">×</button></div>
