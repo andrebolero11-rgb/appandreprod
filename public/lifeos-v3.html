@@ -423,8 +423,12 @@ select.fi option{background:var(--bg3);}
     <div class="page act" id="pg-dash">
       <div class="sh mb20">
         <div><div class="sh-t">Visão Geral</div><div class="sh-sub" id="d-date"></div></div>
-        <div class="streak-b">🔥 <span id="d-str">0</span> dias</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-g" onclick="openTagManager()" style="font-size:11px;">🏷️ Gerenciar Tags</button>
+          <div class="streak-b">🔥 <span id="d-str">0</span> dias</div>
+        </div>
       </div>
+      <div class="dash-tag-filter" id="d-tag-filter"></div>
       <div class="g4 mb14" id="d-stats"></div>
       <div class="g2 mb14">
         <div class="card"><div class="ct">Produtividade semanal</div><div class="wc" id="wc"></div><div style="display:flex;gap:5px;align-items:center;margin-top:10px;"><div style="width:8px;height:8px;border-radius:2px;background:var(--acc);"></div><span style="font-size:10px;color:var(--tx3);">tarefas / dia</span></div></div>
