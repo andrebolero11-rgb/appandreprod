@@ -1242,7 +1242,7 @@ function renderProjects(){
 function toggleMilestone(projId, mi){
   const p=S.projects.find(p=>p.id===projId); if(!p||!p.milestones) return;
   p.milestones[mi].done=!p.milestones[mi].done;
-  if(p.milestones[mi].done){ addXP(15); toast(`✅ Marco concluído! +15 XP`,'s'); checkAchievements(); }
+  if(p.milestones[mi].done){ toast(`✅ Marco concluído!`,'s'); checkAchievements(); }
   saveState(); renderProjects();
 }
 
