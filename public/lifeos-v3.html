@@ -2066,19 +2066,121 @@ document.getElementById('confirm-mo').addEventListener('keydown',e=>{
 applyTheme();
 updateBadge();
 
-// Apply XP/level from saved state
-// XP init removed
-
 // Ensure projects have milestones array
 S.projects.forEach(p=>{ if(!p.milestones) p.milestones=[]; });
-// Ensure achievements arrays exist
+// Ensure arrays exist
 if(!S.customAch) S.customAch=[];
 if(!S.unlockedAch) S.unlockedAch=[];
 if(!S.unlockedCustomAch) S.unlockedCustomAch=[];
+if(!S.tags) S.tags=[{name:'trabalho',color:'#3b82f6'},{name:'pessoal',color:'#22c55e'},{name:'saúde',color:'#ef4444'},{name:'produtividade',color:'#8b7cf5'}];
+if(!S.dashTagFilter) S.dashTagFilter='';
+if(!S.projView) S.projView='inbox';
 
 saveState();
 renderDash();
 checkAchievements();
+
+// ============================================================
+// CUSTOM DAYS / TAG / PROJ VIEW HELPERS
+// ============================================================
+function toggleDayChip(el){ el.classList.toggle('on'); }
+
+function toggleHabitCustomDays(){
+  const v = document.getElementById('h-freq').value;
+  document.getElementById('h-custom-days-wrap').style.display = v==='custom'?'block':'none';
+}
+
+function toggleTaskCustomDays(){
+  const v = document.getElementById('t-recur').value;
+  document.getElementById('t-custom-days-wrap').style.display = v==='custom'?'block':'none';
+}
+
+// Tag manager
+function openTagManager(){ 
+  renderTagList();
+  openMo('mo-tags'); 
+  setTimeout(()=>document.getElementById('new-tag-name').focus(),100);
+}
+
+function renderTagList(){
+  if(!S.tags) S.tags=[];
+  const el = document.getElementById('tag-list');
+  if(!el) return;
+  el.innerHTML = S.tags.length ? S.tags.map((t,i)=>
+    `<div class="tag-pill" style="background:${t.color}22;color:${t.color};">
+      🏷️ ${esc(t.name)}
+      <span class="tag-x" onclick="removeTag(${i});event.stopPropagation();">✕</span>
+    </div>`
+  ).join('') : '<span style="font-size:12px;color:var(--tx3);">Nenhuma tag criada.</span>';
+}
+
+function addTag(){
+  const name = document.getElementById('new-tag-name').value.trim().toLowerCase();
+  if(!name){ toast('⚠️ Digite um nome!','e'); return; }
+  if(!S.tags) S.tags=[];
+  if(S.tags.some(t=>t.name===name)){ toast('⚠️ Tag já existe!','e'); return; }
+  const color = document.getElementById('new-tag-color').value;
+  S.tags.push({name, color});
+  document.getElementById('new-tag-name').value='';
+  saveState(); renderTagList(); 
+  toast(`🏷️ Tag "${name}" criada!`,'s');
+  // Update tag input datalist if on dash
+  renderDashTagFilter();
+}
+
+function removeTag(i){
+  if(!S.tags) return;
+  const name = S.tags[i].name;
+  S.tags.splice(i,1);
+  if(S.dashTagFilter===name) S.dashTagFilter='';
+  saveState(); renderTagList(); renderDashTagFilter();
+  toast('🗑 Tag removida','i');
+}
+
+function renderDashTagFilter(){
+  if(!S.tags) S.tags=[];
+  const el = document.getElementById('d-tag-filter');
+  if(!el) return;
+  // Get all unique tags from tasks + defined tags
+  const allTags = new Set(S.tags.map(t=>t.name));
+  S.tasks.forEach(t=>{ if(t.tag) allTags.add(t.tag); });
+  const tags = [...allTags];
+  if(!tags.length){ el.innerHTML=''; return; }
+  el.innerHTML = `<div class="dash-tag-btn ${!S.dashTagFilter?'on':''}" onclick="setDashTagFilter('')">Todas</div>` +
+    tags.map(t=>{
+      const def = S.tags.find(d=>d.name===t);
+      const color = def?def.color:'var(--tx3)';
+      return `<div class="dash-tag-btn ${S.dashTagFilter===t?'on':''}" onclick="setDashTagFilter('${esc(t)}')" style="${S.dashTagFilter===t?`background:${color}22;border-color:${color};color:${color};`:''}">🏷️ ${esc(t)}</div>`;
+    }).join('');
+}
+
+function setDashTagFilter(tag){
+  S.dashTagFilter = tag;
+  saveState();
+  renderDash();
+}
+
+// Update habit freq display
+function freqLabel(h){
+  if(h.freq==='daily') return 'Diário';
+  if(h.freq==='weekly') return 'Semanal';
+  if(h.freq==='custom' && h.customDays){
+    const dl=['D','S','T','Q','Q','S','S'];
+    return h.customDays.map(d=>dl[d]).join(', ');
+  }
+  return h.freq;
+}
+
+// Update task recur display
+function recurLabel(r, customDays){
+  if(r==='daily') return 'Diário';
+  if(r==='weekly') return 'Semanal';
+  if(r==='custom' && customDays){
+    const dl=['D','S','T','Q','Q','S','S'];
+    return customDays.map(d=>dl[d]).join(', ');
+  }
+  return r;
+}
 </script>
 </body>
 </html>
