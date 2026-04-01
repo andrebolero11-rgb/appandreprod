@@ -1563,7 +1563,7 @@ function toggleTask(id){
 function toggleSub(tid, si){
   const t = S.tasks.find(t=>t.id===tid); if(!t) return;
   t.subsDone[si] = !t.subsDone[si];
-  if(t.subsDone[si]){ addXP(5); toast('✅ Subtarefa concluída! +5 XP','s'); }
+  if(t.subsDone[si]){ toast('✅ Subtarefa concluída!','s'); }
   saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash');
 }
 
