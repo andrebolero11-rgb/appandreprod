@@ -1600,23 +1600,10 @@ function changeProjStatus(id, status){
 }
 
 // ============================================================
-// XP & LEVEL
+// (XP system removed)
 // ============================================================
 function addXP(amt){
-  S.xp += amt;
-  const pct = Math.min(100,Math.round((S.xp%LEVEL_XP)/LEVEL_XP*100));
-  const f=document.getElementById('xp-f'); if(f) f.style.width=pct+'%';
-  const l=document.getElementById('xp-l'); if(l) l.textContent=`${S.xp.toLocaleString('pt-BR')} / ${LEVEL_XP.toLocaleString('pt-BR')} XP`;
-  const newLevel = Math.floor(S.xp/LEVEL_XP)+1;
-  if(newLevel>S.level){
-    S.level = newLevel;
-    const n=document.getElementById('lvl-n'); if(n) n.textContent=S.level;
-    const n2=document.getElementById('lvl-n2'); if(n2) n2.textContent=S.level;
-    toast(`🏆 LEVEL UP! Você é agora Nível ${S.level}!`,'x');
-    spawnConfetti();
-    checkAchievements();
-  }
-  saveState();
+  // XP system removed — function kept as no-op for compatibility
 }
 
 function updateBadge(){
