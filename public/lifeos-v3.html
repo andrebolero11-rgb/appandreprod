@@ -1907,13 +1907,19 @@ function saveTask(){
   const title=document.getElementById('t-title').value.trim();
   if(!title){ toast('⚠️ Digite um título!','e'); return; }
   const subs=document.getElementById('t-subs').value.trim().split('\n').filter(s=>s.trim());
+  const recur=document.getElementById('t-recur').value;
+  let customDays=[];
+  if(recur==='custom'){
+    customDays=[...document.querySelectorAll('#t-custom-days .day-chip.on')].map(c=>parseInt(c.dataset.day));
+    if(!customDays.length){ toast('⚠️ Selecione pelo menos um dia!','e'); return; }
+  }
   if(editTaskId){
     const t=S.tasks.find(t=>t.id===editTaskId);
     if(t){
       t.title=title;t.prio=document.getElementById('t-prio').value;
       t.energy=document.getElementById('t-energy').value;t.date=document.getElementById('t-date').value;
       t.tag=document.getElementById('t-tag').value;t.proj=parseInt(document.getElementById('t-proj').value)||0;
-      t.recur=document.getElementById('t-recur').value;t.status=document.getElementById('t-status').value;
+      t.recur=recur;t.customDays=customDays;t.status=document.getElementById('t-status').value;
       if(subs.length){ t.subs=subs; if(t.subsDone.length!==subs.length) t.subsDone=subs.map(()=>false); }
     }
     toast('✅ Tarefa atualizada!','s');
@@ -1921,7 +1927,7 @@ function saveTask(){
     S.tasks.unshift({id:uid(),title,prio:document.getElementById('t-prio').value,energy:document.getElementById('t-energy').value,done:false,
       date:document.getElementById('t-date').value,tag:document.getElementById('t-tag').value,
       proj:parseInt(document.getElementById('t-proj').value)||0,status:document.getElementById('t-status').value,
-      subs,subsDone:subs.map(()=>false),recur:document.getElementById('t-recur').value});
+      subs,subsDone:subs.map(()=>false),recur,customDays});
     toast('📝 Tarefa criada!','s');
   }
   closeMo('mo-task'); saveState();
