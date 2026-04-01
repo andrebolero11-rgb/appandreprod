@@ -1936,8 +1936,14 @@ function openHabitMo(){
 function saveHabit(){
   const name=document.getElementById('h-name').value.trim();
   if(!name){ toast('⚠️ Digite um nome!','e'); return; }
+  const freq = document.getElementById('h-freq').value;
+  let customDays = [];
+  if(freq==='custom'){
+    customDays = [...document.querySelectorAll('#h-custom-days .day-chip.on')].map(c=>parseInt(c.dataset.day));
+    if(!customDays.length){ toast('⚠️ Selecione pelo menos um dia!','e'); return; }
+  }
   S.habits.push({id:uid(),name,emoji:document.getElementById('h-emoji').value.trim()||'⭐',streak:0,color:selColor,
-    type:document.getElementById('h-type').value,freq:document.getElementById('h-freq').value,
+    type:document.getElementById('h-type').value,freq,customDays,
     doneToday:false,lastDone:'',hist:Array(35).fill(0)});
   toast(`🔁 "${name}" criado!`,'s');
   closeMo('mo-habit'); saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash');
