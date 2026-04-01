@@ -35,7 +35,7 @@ html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(
 .app{display:flex;height:100vh;position:relative;}
 
 /* ===== SIDEBAR ===== */
-.sb{width:224px;min-width:224px;background:var(--bg2);border-right:1px solid var(--br);display:flex;flex-direction:column;overflow:hidden;transition:transform .25s,width .25s,min-width .25s;z-index:60;}
+.sb{width:240px;min-width:240px;background:var(--bg2);border-right:1px solid var(--br);display:flex;flex-direction:column;overflow:hidden;transition:transform .25s,width .25s,min-width .25s;z-index:60;backdrop-filter:blur(12px);}
 .sb.closed{width:0;min-width:0;}
 @media(max-width:680px){
   .sb{position:fixed;top:0;bottom:0;left:0;transform:translateX(-100%);width:224px!important;min-width:224px!important;}
