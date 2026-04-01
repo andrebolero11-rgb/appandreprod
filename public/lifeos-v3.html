@@ -972,7 +972,7 @@ function taskHTML(t, mini){
         ${t.energy?`<span class="tag t-e">${el[t.energy]}</span>`:''}
         ${t.tag?`<span class="tag t-d">#${esc(t.tag)}</span>`:''}
         ${t.date?`<span class="tag ${over?'t-ov':'t-d'}">${over?'⚠️ ':''} ${fmtDate(t.date)}</span>`:''}
-        ${t.recur?`<span class="tag t-d">🔄 ${t.recur==='daily'?'Diário':'Semanal'}</span>`:''}
+        ${t.recur?`<span class="tag t-d">🔄 ${typeof recurLabel==='function'?recurLabel(t.recur,t.customDays):(t.recur==='daily'?'Diário':'Semanal')}</span>`:''}
         ${t.subs&&t.subs.length?`<span class="tag t-d">📋 ${t.subsDone.filter(Boolean).length}/${t.subs.length}</span>`:''}
       </div>
       ${subsHTML}
