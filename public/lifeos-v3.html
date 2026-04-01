@@ -730,8 +730,7 @@ const ACHIEVEMENTS_DEF = [
   {id:'five_habits',icon:'💪',name:'Máquina de hábitos',desc:'Tenha 5 hábitos ativos',cond:s=>s.habits.length>=5},
   {id:'first_goal',icon:'🎯',name:'Com objetivo',desc:'Crie sua primeira meta',cond:s=>s.goals.length>=1},
   {id:'goal_100',icon:'🌟',name:'Meta alcançada!',desc:'Leve uma meta a 100%',cond:s=>s.goals.some(g=>g.progress>=100)},
-  {id:'level5',icon:'⚡',name:'Nível 5',desc:'Alcance o nível 5',cond:s=>s.level>=5},
-  {id:'level10',icon:'🚀',name:'Nível 10',desc:'Alcance o nível 10',cond:s=>s.level>=10},
+  {id:'pom5',icon:'🍅',name:'Foco total',desc:'Complete 5 sessões Pomodoro',cond:s=>s.pomSessions>=5},
   {id:'pom5',icon:'🍅',name:'Foco total',desc:'Complete 5 sessões Pomodoro',cond:s=>s.pomSessions>=5},
   {id:'all_habits',icon:'🌈',name:'Dia perfeito',desc:'Conclua todos os hábitos em um dia',cond:s=>s.habits.length>0&&s.habits.every(h=>h.doneToday)},
 ];
