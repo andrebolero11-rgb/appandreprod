@@ -340,6 +340,36 @@ select.fi option{background:var(--bg3);}
 /* ===== PROJ KB ===== */
 .p-kb-w{display:flex;gap:14px;overflow-x:auto;padding-bottom:10px;}
 .p-col{min-width:256px;background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:12px;}
+
+/* ===== PROJ INBOX ===== */
+.inbox-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg2);border:1px solid var(--br);border-radius:var(--rs);margin-bottom:5px;transition:all .15s;}
+.inbox-item:hover{border-color:var(--br2);background:var(--bg3);}
+.inbox-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;background:var(--accg);color:var(--acc2);}
+
+/* ===== PROJ LIST VIEW ===== */
+.proj-list-item{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:16px;margin-bottom:10px;transition:all .2s;}
+.proj-list-item:hover{border-color:var(--br2);transform:translateY(-1px);box-shadow:var(--sh);}
+.proj-list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.proj-list-status{font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;}
+.ps-active{background:var(--blug);color:var(--blu);}
+.ps-paused{background:var(--bg4);color:var(--tx3);}
+.ps-done{background:var(--grng);color:var(--grn);}
+
+/* ===== CUSTOM DAYS ===== */
+.custom-days{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
+.day-chip{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid var(--br);background:var(--bg3);color:var(--tx3);transition:all .15s;user-select:none;}
+.day-chip.on{background:var(--accg);border-color:var(--acc);color:var(--acc2);}
+
+/* ===== TAG MANAGER ===== */
+.tag-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+.tag-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;border:1.5px solid transparent;}
+.tag-pill.on{border-color:currentColor;box-shadow:0 0 0 2px currentColor20;}
+.tag-pill .tag-x{font-size:9px;cursor:pointer;opacity:.6;transition:opacity .15s;}
+.tag-pill .tag-x:hover{opacity:1;}
+.dash-tag-filter{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;}
+.dash-tag-btn{padding:4px 12px;border-radius:99px;font-size:11px;font-weight:600;cursor:pointer;background:var(--bg3);color:var(--tx3);border:1.5px solid var(--br);transition:all .15s;user-select:none;}
+.dash-tag-btn.on{background:var(--accg);border-color:var(--acc);color:var(--acc2);}
+.dash-tag-btn:hover{border-color:var(--br2);}
 </style>
 </head>
 <body>
@@ -393,8 +423,12 @@ select.fi option{background:var(--bg3);}
     <div class="page act" id="pg-dash">
       <div class="sh mb20">
         <div><div class="sh-t">Visão Geral</div><div class="sh-sub" id="d-date"></div></div>
-        <div class="streak-b">🔥 <span id="d-str">0</span> dias</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-g" onclick="openTagManager()" style="font-size:11px;">🏷️ Gerenciar Tags</button>
+          <div class="streak-b">🔥 <span id="d-str">0</span> dias</div>
+        </div>
       </div>
+      <div class="dash-tag-filter" id="d-tag-filter"></div>
       <div class="g4 mb14" id="d-stats"></div>
       <div class="g2 mb14">
         <div class="card"><div class="ct">Produtividade semanal</div><div class="wc" id="wc"></div><div style="display:flex;gap:5px;align-items:center;margin-top:10px;"><div style="width:8px;height:8px;border-radius:2px;background:var(--acc);"></div><span style="font-size:10px;color:var(--tx3);">tarefas / dia</span></div></div>
@@ -472,8 +506,20 @@ select.fi option{background:var(--bg3);}
 
     <!-- ===== PROJECTS ===== -->
     <div class="page" id="pg-projects">
-      <div class="sh"><div class="sh-t">Projetos</div><button class="btn btn-p" onclick="openProjMo()">+ Projeto</button></div>
-      <div class="p-kb-w" id="p-kb"></div>
+      <div class="sh">
+        <div class="sh-t">Projetos</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <div class="tabs" style="margin-bottom:0;">
+            <div class="tab on" onclick="switchProjView('inbox',this)">📥 Caixa de entrada</div>
+            <div class="tab" onclick="switchProjView('list',this)">📋 Lista</div>
+            <div class="tab" onclick="switchProjView('kanban',this)">🗂️ Kanban</div>
+          </div>
+          <button class="btn btn-p" onclick="openProjMo()">+ Projeto</button>
+        </div>
+      </div>
+      <div id="p-inbox-w"><div id="p-inbox"></div></div>
+      <div id="p-list-w" style="display:none;"><div id="p-list"></div></div>
+      <div id="p-kb-w" style="display:none;"><div class="p-kb-w" id="p-kb"></div></div>
     </div>
 
     <!-- ===== POMODORO ===== -->
@@ -593,7 +639,19 @@ select.fi option{background:var(--bg3);}
     <div class="fg"><label class="fl">Projeto</label><select class="fi" id="t-proj"><option value="0">Sem projeto</option></select></div>
     <div class="fg"><label class="fl">Status (Kanban)</label><select class="fi" id="t-status"><option value="todo">A fazer</option><option value="doing">Em progresso</option><option value="done_kb">Concluído</option></select></div>
     <div class="fg"><label class="fl">Subtarefas (uma por linha)</label><textarea class="fi" id="t-subs" rows="3" placeholder="Pesquisar&#10;Rascunhar&#10;Revisar"></textarea></div>
-    <div class="fg"><label class="fl">Recorrência</label><select class="fi" id="t-recur"><option value="">Sem recorrência</option><option value="daily">Diária</option><option value="weekly">Semanal</option></select></div>
+    <div class="fg"><label class="fl">Recorrência</label><select class="fi" id="t-recur" onchange="toggleTaskCustomDays()"><option value="">Sem recorrência</option><option value="daily">Diária</option><option value="weekly">Semanal</option><option value="custom">Personalizado</option></select></div>
+    <div class="fg" id="t-custom-days-wrap" style="display:none;">
+      <label class="fl">Dias da semana</label>
+      <div class="custom-days" id="t-custom-days">
+        <div class="day-chip" data-day="0" onclick="toggleDayChip(this)">D</div>
+        <div class="day-chip" data-day="1" onclick="toggleDayChip(this)">S</div>
+        <div class="day-chip" data-day="2" onclick="toggleDayChip(this)">T</div>
+        <div class="day-chip" data-day="3" onclick="toggleDayChip(this)">Q</div>
+        <div class="day-chip" data-day="4" onclick="toggleDayChip(this)">Q</div>
+        <div class="day-chip" data-day="5" onclick="toggleDayChip(this)">S</div>
+        <div class="day-chip" data-day="6" onclick="toggleDayChip(this)">S</div>
+      </div>
+    </div>
     <div class="mo-act"><button class="btn btn-g" onclick="closeMo('mo-task')">Cancelar</button><button class="btn btn-p" onclick="saveTask()">Salvar</button></div>
   </div>
 </div>
@@ -605,7 +663,19 @@ select.fi option{background:var(--bg3);}
     <div class="fg"><label class="fl">Nome *</label><input class="fi" id="h-name" placeholder="Meditação, Treino, Leitura..." autocomplete="off"></div>
     <div class="fr">
       <div class="fg"><label class="fl">Emoji</label><input class="fi" id="h-emoji" placeholder="🧘" maxlength="2"></div>
-      <div class="fg"><label class="fl">Frequência</label><select class="fi" id="h-freq"><option value="daily">Diário</option><option value="weekly">Semanal</option></select></div>
+      <div class="fg"><label class="fl">Frequência</label><select class="fi" id="h-freq" onchange="toggleHabitCustomDays()"><option value="daily">Diário</option><option value="weekly">Semanal</option><option value="custom">Personalizado</option></select></div>
+    </div>
+    <div class="fg" id="h-custom-days-wrap" style="display:none;">
+      <label class="fl">Dias da semana</label>
+      <div class="custom-days" id="h-custom-days">
+        <div class="day-chip" data-day="0" onclick="toggleDayChip(this)">D</div>
+        <div class="day-chip" data-day="1" onclick="toggleDayChip(this)">S</div>
+        <div class="day-chip" data-day="2" onclick="toggleDayChip(this)">T</div>
+        <div class="day-chip" data-day="3" onclick="toggleDayChip(this)">Q</div>
+        <div class="day-chip" data-day="4" onclick="toggleDayChip(this)">Q</div>
+        <div class="day-chip" data-day="5" onclick="toggleDayChip(this)">S</div>
+        <div class="day-chip" data-day="6" onclick="toggleDayChip(this)">S</div>
+      </div>
     </div>
     <div class="fg"><label class="fl">Tipo</label><select class="fi" id="h-type"><option value="positive">✅ Positivo (fazer)</option><option value="avoid">🚫 Evitar (não fazer)</option></select></div>
     <div class="fg"><label class="fl">Cor</label>
@@ -651,7 +721,33 @@ select.fi option{background:var(--bg3);}
   </div>
 </div>
 
-<!-- MODAL: ACHIEVEMENT -->
+<!-- MODAL: TAG MANAGER -->
+<div class="mo" id="mo-tags">
+  <div class="mo-bx">
+    <div class="mo-ttl">🏷️ Gerenciar Tags <button class="mo-x" onclick="closeMo('mo-tags')">×</button></div>
+    <div class="fg">
+      <label class="fl">Criar nova tag</label>
+      <div style="display:flex;gap:8px;">
+        <input class="fi" id="new-tag-name" placeholder="Nome da tag..." autocomplete="off" style="flex:1;">
+        <select class="fi" id="new-tag-color" style="width:auto;">
+          <option value="#8b7cf7">🟣 Roxo</option>
+          <option value="#3b82f6">🔵 Azul</option>
+          <option value="#22c55e">🟢 Verde</option>
+          <option value="#f59e0b">🟡 Âmbar</option>
+          <option value="#ec4899">🩷 Rosa</option>
+          <option value="#ef4444">🔴 Vermelho</option>
+          <option value="#60a5fa">💠 Celeste</option>
+        </select>
+        <button class="btn btn-p" onclick="addTag()">+</button>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="fl">Tags existentes</label>
+      <div class="tag-list" id="tag-list"></div>
+    </div>
+    <div class="mo-act"><button class="btn btn-g" onclick="closeMo('mo-tags')">Fechar</button></div>
+  </div>
+</div>
 <div class="mo" id="mo-ach">
   <div class="mo-bx">
     <div class="mo-ttl"><span id="mo-ach-ttl">Nova Recompensa</span><button class="mo-x" onclick="closeMo('mo-ach')">×</button></div>
@@ -719,6 +815,14 @@ const DEFAULT_STATE = {
   customAch:[],
   unlockedAch:[],
   unlockedCustomAch:[],
+  tags:[
+    {name:'trabalho',color:'#3b82f6'},
+    {name:'pessoal',color:'#22c55e'},
+    {name:'saúde',color:'#ef4444'},
+    {name:'produtividade',color:'#8b7cf7'},
+  ],
+  dashTagFilter:'',
+  projView:'inbox',
 };
 
 const ACHIEVEMENTS_DEF = [
@@ -868,7 +972,7 @@ function taskHTML(t, mini){
         ${t.energy?`<span class="tag t-e">${el[t.energy]}</span>`:''}
         ${t.tag?`<span class="tag t-d">#${esc(t.tag)}</span>`:''}
         ${t.date?`<span class="tag ${over?'t-ov':'t-d'}">${over?'⚠️ ':''} ${fmtDate(t.date)}</span>`:''}
-        ${t.recur?`<span class="tag t-d">🔄 ${t.recur==='daily'?'Diário':'Semanal'}</span>`:''}
+        ${t.recur?`<span class="tag t-d">🔄 ${typeof recurLabel==='function'?recurLabel(t.recur,t.customDays):(t.recur==='daily'?'Diário':'Semanal')}</span>`:''}
         ${t.subs&&t.subs.length?`<span class="tag t-d">📋 ${t.subsDone.filter(Boolean).length}/${t.subs.length}</span>`:''}
       </div>
       ${subsHTML}
@@ -894,7 +998,11 @@ function renderDash(){
   const strEl = document.getElementById('d-str');
   if(strEl) strEl.textContent = S.streak;
 
-  const todayT = S.tasks.filter(t=>t.date===TODAY||!t.date);
+  // Tag filter
+  renderDashTagFilter();
+  const tagF = S.dashTagFilter || '';
+
+  const todayT = S.tasks.filter(t=>(t.date===TODAY||!t.date) && (!tagF || t.tag===tagF));
   const doneT = todayT.filter(t=>t.done);
   const tPct = todayT.length ? Math.round(doneT.length/todayT.length*100) : 0;
   const doneH = S.habits.filter(h=>h.doneToday);
@@ -948,7 +1056,7 @@ function renderDash(){
   if(dr) dr.innerHTML = ring(tPct,'var(--grn)','Tarefas',`${doneT.length}/${todayT.length}`)+ring(hPct,'var(--acc)','Hábitos',`${doneH.length}/${S.habits.length}`)+ring(avgG,'var(--amb)','Metas',`${S.goals.length} ativas`);
 
   // Pending
-  const pend = S.tasks.filter(t=>!t.done).slice(0,4);
+  const pend = S.tasks.filter(t=>!t.done && (!tagF || t.tag===tagF)).slice(0,4);
   const dt = document.getElementById('d-tasks');
   if(dt) dt.innerHTML = pend.length ? pend.map(t=>taskHTML(t,true)).join('') : '<div class="empty"><div class="empty-ic">🎉</div><div>Tudo concluído hoje!</div></div>';
 
@@ -992,7 +1100,7 @@ function renderToday(){
   const th = document.getElementById('t-habits');
   if(th) th.innerHTML = S.habits.map(h=>`
     <div class="hi">
-      <div class="hi-hd"><div class="hi-ic" style="background:${h.color}22;">${h.emoji}</div><div><div class="hi-nm">${esc(h.name)}</div><div class="hi-tp">${h.type==='positive'?'✅ Positivo':'🚫 Evitar'} · ${h.freq==='daily'?'Diário':'Semanal'}</div></div><div class="hi-str"><div class="sn">${h.streak}</div><div class="sl">dias</div></div></div>
+      <div class="hi-hd"><div class="hi-ic" style="background:${h.color}22;">${h.emoji}</div><div><div class="hi-nm">${esc(h.name)}</div><div class="hi-tp">${h.type==='positive'?'✅ Positivo':'🚫 Evitar'} · ${typeof freqLabel==='function'?freqLabel(h):(h.freq==='daily'?'Diário':'Semanal')}</div></div><div class="hi-str"><div class="sn">${h.streak}</div><div class="sl">dias</div></div></div>
       <div class="pb"><div class="pf" style="width:${Math.min(100,Math.round(h.streak/30*100))}%;background:${h.color}"></div></div>
       <div style="margin-top:8px;"><button class="hcb ${h.doneToday?'on':'off'}" onclick="toggleHabit(${h.id})">${h.doneToday?'✅ Concluído hoje!':'⭕ Marcar como feito'}</button></div>
     </div>`).join('');
@@ -1100,7 +1208,7 @@ function renderHabits(){
     const l7 = h.hist.slice(-7);
     return `<div class="hi">
       <div class="hi-hd"><div class="hi-ic" style="background:${h.color}22;">${h.emoji}</div>
-        <div><div class="hi-nm">${esc(h.name)}</div><div class="hi-tp">${h.type==='positive'?'✅ Positivo':'🚫 Evitar'} · ${h.freq==='daily'?'Diário':'Semanal'}</div></div>
+        <div><div class="hi-nm">${esc(h.name)}</div><div class="hi-tp">${h.type==='positive'?'✅ Positivo':'🚫 Evitar'} · ${typeof freqLabel==='function'?freqLabel(h):(h.freq==='daily'?'Diário':'Semanal')}</div></div>
         <div class="hi-str"><div class="sn">${h.streak}</div><div class="sl">streak</div></div>
       </div>
       <div class="hi-dots">${l7.map((v,i)=>`<div class="hd ${v>0?'on':''} ${i===6?'td':''}">${v>0?'✓':''}</div>`).join('')}</div>
@@ -1170,6 +1278,132 @@ function renderGoals(){
 // PROJECTS — com milestones e progresso real
 // ============================================================
 function renderProjects(){
+  const view = S.projView || 'inbox';
+  document.getElementById('p-inbox-w').style.display = view==='inbox'?'block':'none';
+  document.getElementById('p-list-w').style.display = view==='list'?'block':'none';
+  document.getElementById('p-kb-w').style.display = view==='kanban'?'block':'none';
+
+  if(view==='inbox') renderProjInbox();
+  else if(view==='list') renderProjList();
+  else renderProjKanban();
+}
+
+function switchProjView(v, el){
+  S.projView = v;
+  saveState();
+  document.querySelectorAll('#pg-projects .tab').forEach(t=>t.classList.remove('on'));
+  if(el) el.classList.add('on');
+  renderProjects();
+}
+
+function projCardHTML(p){
+  if(!p.milestones) p.milestones=[];
+  const ms=p.milestones;
+  const msDone=ms.filter(m=>m.done).length;
+  const msPct=ms.length?Math.round(msDone/ms.length*100):0;
+  const ts=S.tasks.filter(t=>t.proj===p.id);
+  const tsDone=ts.filter(t=>t.done).length;
+  const tsPct=ts.length?Math.round(tsDone/ts.length*100):0;
+  const combined=ms.length?(Math.round(msPct*.6+tsPct*.4)):tsPct;
+  const statusColors={active:'var(--blu)',paused:'var(--tx3)',done:'var(--grn)'};
+  const pfc=statusColors[p.status]||'var(--blu)';
+  return {combined, msDone, ms, tsDone, ts, pfc};
+}
+
+function renderProjInbox(){
+  const el = document.getElementById('p-inbox');
+  if(!el) return;
+  // Inbox: all projects, newest first, quick overview
+  const all = [...S.projects].reverse();
+  const statusLabels={active:'Em andamento',paused:'Pausado',done:'Concluído'};
+  const statusCls={active:'ps-active',paused:'ps-paused',done:'ps-done'};
+  el.innerHTML = all.length ? all.map(p=>{
+    const d = projCardHTML(p);
+    return `<div class="proj-list-item">
+      <div class="proj-list-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-weight:700;font-size:14px;">${esc(p.name)}</div>
+          <span class="proj-list-status ${statusCls[p.status]}">${statusLabels[p.status]}</span>
+        </div>
+        <div style="display:flex;gap:5px;">
+          <select onchange="changeProjStatus(${p.id},this.value)" style="padding:4px 7px;border-radius:var(--rs);border:1px solid var(--br);background:var(--bg3);color:var(--tx);font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;">
+            <option value="active" ${p.status==='active'?'selected':''}>Em andamento</option>
+            <option value="paused" ${p.status==='paused'?'selected':''}>Pausado</option>
+            <option value="done" ${p.status==='done'?'selected':''}>Concluído</option>
+          </select>
+          <button onclick="confirmDel('proj',${p.id})" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:12px;" title="Remover">🗑</button>
+        </div>
+      </div>
+      ${p.desc?`<div style="font-size:12px;color:var(--tx2);margin-bottom:8px;">${esc(p.desc)}</div>`:''}
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="flex:1;">
+          <div style="font-size:10px;color:var(--tx3);margin-bottom:3px;display:flex;justify-content:space-between;">
+            <span>Progresso</span><strong style="color:${d.pfc}">${d.combined}%</strong>
+          </div>
+          <div class="pb" style="height:6px;margin:0;"><div class="pf" style="width:${d.combined}%;background:${d.pfc};height:100%;"></div></div>
+        </div>
+        <div style="font-size:11px;color:var(--tx3);">${d.msDone}/${d.ms.length} marcos · ${d.tsDone}/${d.ts.length} tarefas</div>
+      </div>
+      <!-- Quick add milestone -->
+      <div style="display:flex;gap:5px;margin-top:8px;">
+        <input class="fi" id="ms-inp-${p.id}" placeholder="+ Adicionar marco..." style="font-size:11px;padding:5px 8px;flex:1;" onkeydown="if(event.key==='Enter')addMilestone(${p.id})">
+        <button class="btn btn-p" style="font-size:11px;padding:5px 10px;" onclick="addMilestone(${p.id})">+</button>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty"><div class="empty-ic">📥</div><div>Caixa de entrada vazia. Crie um projeto!</div></div>';
+}
+
+function renderProjList(){
+  const el = document.getElementById('p-list');
+  if(!el) return;
+  const statusLabels={active:'Em andamento',paused:'Pausado',done:'Concluído'};
+  const statusCls={active:'ps-active',paused:'ps-paused',done:'ps-done'};
+  const all = S.projects;
+  el.innerHTML = all.length ? all.map(p=>{
+    const d = projCardHTML(p);
+    return `<div class="proj-list-item">
+      <div class="proj-list-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-weight:700;font-size:14px;">${esc(p.name)}</div>
+          <span class="proj-list-status ${statusCls[p.status]}">${statusLabels[p.status]}</span>
+        </div>
+        <button onclick="confirmDel('proj',${p.id})" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:12px;" title="Remover">🗑</button>
+      </div>
+      ${p.desc?`<div style="font-size:12px;color:var(--tx2);margin-bottom:10px;">${esc(p.desc)}</div>`:''}
+      <div style="font-size:10px;color:var(--tx3);margin-bottom:3px;display:flex;justify-content:space-between;">
+        <span>Progresso geral</span><strong style="color:${d.pfc}">${d.combined}%</strong>
+      </div>
+      <div class="pb" style="height:7px;margin-bottom:10px;"><div class="pf" style="width:${d.combined}%;background:${d.pfc};height:100%;"></div></div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <div style="flex:1;background:var(--bg4);border-radius:6px;padding:6px 8px;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;">${d.msDone}/${d.ms.length}</div>
+          <div style="font-size:9px;color:var(--tx3);margin-top:1px;">Marcos</div>
+        </div>
+        <div style="flex:1;background:var(--bg4);border-radius:6px;padding:6px 8px;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;">${d.tsDone}/${d.ts.length}</div>
+          <div style="font-size:9px;color:var(--tx3);margin-top:1px;">Tarefas</div>
+        </div>
+      </div>
+      ${d.ms.length?`<div style="margin-bottom:8px;">
+        ${d.ms.map((m,i)=>`<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px;" onclick="toggleMilestone(${p.id},${i})">
+          <div style="width:13px;height:13px;border-radius:50%;border:1.5px solid ${m.done?'var(--grn)':'var(--br2)'};background:${m.done?'var(--grn)':'transparent'};display:grid;place-items:center;flex-shrink:0;cursor:pointer;font-size:8px;color:#fff;">${m.done?'✓':''}</div>
+          <span style="${m.done?'text-decoration:line-through;color:var(--tx3);':'color:var(--tx2);'}">${esc(m.text)}</span>
+        </div>`).join('')}
+      </div>`:''}
+      <div style="display:flex;gap:5px;">
+        <input class="fi" id="ms-inp-${p.id}" placeholder="+ Adicionar marco..." style="font-size:11px;padding:5px 8px;flex:1;" onkeydown="if(event.key==='Enter')addMilestone(${p.id})">
+        <button class="btn btn-p" style="font-size:11px;padding:5px 10px;" onclick="addMilestone(${p.id})">+</button>
+      </div>
+      <select onchange="changeProjStatus(${p.id},this.value)" style="width:100%;padding:5px 7px;border-radius:var(--rs);border:1px solid var(--br);background:var(--bg3);color:var(--tx);font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:8px;">
+        <option value="active" ${p.status==='active'?'selected':''}>Em andamento</option>
+        <option value="paused" ${p.status==='paused'?'selected':''}>Pausado</option>
+        <option value="done" ${p.status==='done'?'selected':''}>Concluído</option>
+      </select>
+    </div>`;
+  }).join('') : '<div class="empty"><div class="empty-ic">📋</div><div>Nenhum projeto. Crie um!</div></div>';
+}
+
+function renderProjKanban(){
   const statuses=[
     {id:'active',label:'Em andamento',color:'var(--blu)'},
     {id:'paused',label:'Pausados',color:'var(--tx3)'},
@@ -1182,51 +1416,37 @@ function renderProjects(){
     return `<div class="p-col">
       <div class="kb-ct" style="color:${s.color}">${s.label} <span class="kb-cnt">${ps.length}</span></div>
       ${ps.map(p=>{
-        if(!p.milestones) p.milestones=[];
-        const ms=p.milestones;
-        const msDone=ms.filter(m=>m.done).length;
-        const msPct=ms.length?Math.round(msDone/ms.length*100):0;
-        const ts=S.tasks.filter(t=>t.proj===p.id);
-        const tsDone=ts.filter(t=>t.done).length;
-        const tsPct=ts.length?Math.round(tsDone/ts.length*100):0;
-        // Combined progress: milestones weight 60%, tasks 40%
-        const combined=ms.length?(Math.round(msPct*.6+tsPct*.4)):tsPct;
-        const pfc=s.id==='done'?'var(--grn)':s.id==='active'?'var(--blu)':'var(--tx3)';
+        const d = projCardHTML(p);
         return `<div class="kb-card" style="cursor:default;">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">
             <div style="font-weight:700;font-size:13px;">${esc(p.name)}</div>
             <button onclick="confirmDel('proj',${p.id})" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:11px;padding:2px;flex-shrink:0;" title="Remover">🗑</button>
           </div>
           <div style="font-size:11px;color:var(--tx2);margin-bottom:8px;">${esc(p.desc)}</div>
-          <!-- Progress bar -->
           <div style="font-size:10px;color:var(--tx3);margin-bottom:3px;display:flex;justify-content:space-between;">
-            <span>Progresso geral</span><strong style="color:${pfc}">${combined}%</strong>
+            <span>Progresso geral</span><strong style="color:${d.pfc}">${d.combined}%</strong>
           </div>
-          <div class="pb" style="height:7px;margin-bottom:10px;"><div class="pf" style="width:${combined}%;background:${pfc};height:100%;"></div></div>
-          <!-- Mini stats -->
+          <div class="pb" style="height:7px;margin-bottom:10px;"><div class="pf" style="width:${d.combined}%;background:${d.pfc};height:100%;"></div></div>
           <div style="display:flex;gap:8px;margin-bottom:10px;">
             <div style="flex:1;background:var(--bg4);border-radius:6px;padding:6px 8px;text-align:center;">
-              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;">${msDone}/${ms.length}</div>
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;">${d.msDone}/${d.ms.length}</div>
               <div style="font-size:9px;color:var(--tx3);margin-top:1px;">Marcos</div>
             </div>
             <div style="flex:1;background:var(--bg4);border-radius:6px;padding:6px 8px;text-align:center;">
-              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;">${tsDone}/${ts.length}</div>
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;">${d.tsDone}/${d.ts.length}</div>
               <div style="font-size:9px;color:var(--tx3);margin-top:1px;">Tarefas</div>
             </div>
           </div>
-          <!-- Milestones -->
-          ${ms.length?`<div style="margin-bottom:8px;">
-            ${ms.map((m,i)=>`<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px;" onclick="toggleMilestone(${p.id},${i})">
+          ${d.ms.length?`<div style="margin-bottom:8px;">
+            ${d.ms.map((m,i)=>`<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px;" onclick="toggleMilestone(${p.id},${i})">
               <div style="width:13px;height:13px;border-radius:50%;border:1.5px solid ${m.done?'var(--grn)':'var(--br2)'};background:${m.done?'var(--grn)':'transparent'};display:grid;place-items:center;flex-shrink:0;cursor:pointer;font-size:8px;color:#fff;">${m.done?'✓':''}</div>
               <span style="${m.done?'text-decoration:line-through;color:var(--tx3);':'color:var(--tx2);'}">${esc(m.text)}</span>
             </div>`).join('')}
-          </div>`:'<div style="font-size:11px;color:var(--tx3);margin-bottom:8px;font-style:italic;">Nenhum marco definido</div>'}
-          <!-- Add milestone -->
+          </div>`:''}
           <div style="display:flex;gap:5px;margin-bottom:8px;">
             <input class="fi" id="ms-inp-${p.id}" placeholder="+ Adicionar marco..." style="font-size:11px;padding:5px 8px;flex:1;" onkeydown="if(event.key==='Enter')addMilestone(${p.id})">
             <button class="btn btn-p" style="font-size:11px;padding:5px 10px;" onclick="addMilestone(${p.id})">+</button>
           </div>
-          <!-- Status change -->
           <select onchange="changeProjStatus(${p.id},this.value)" style="width:100%;padding:5px 7px;border-radius:var(--rs);border:1px solid var(--br);background:var(--bg3);color:var(--tx);font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;">
             <option value="active" ${p.status==='active'?'selected':''}>Em andamento</option>
             <option value="paused" ${p.status==='paused'?'selected':''}>Pausado</option>
@@ -1676,6 +1896,11 @@ function openTaskMo(id){
   document.getElementById('t-tag').value = t?t.tag:'';
   document.getElementById('t-subs').value = t&&t.subs?t.subs.join('\n'):'';
   document.getElementById('t-recur').value = t?t.recur:'';
+  // Handle custom days for task
+  const showCustom = t && t.recur==='custom';
+  document.getElementById('t-custom-days-wrap').style.display = showCustom?'block':'none';
+  document.querySelectorAll('#t-custom-days .day-chip').forEach(c=>c.classList.remove('on'));
+  if(showCustom && t.customDays){ t.customDays.forEach(d=>{ const c=document.querySelector(`#t-custom-days .day-chip[data-day="${d}"]`); if(c) c.classList.add('on'); }); }
   document.getElementById('t-status').value = t?(t.status||'todo'):'todo';
   updProjSel();
   document.getElementById('t-proj').value = t?t.proj:0;
@@ -1687,13 +1912,19 @@ function saveTask(){
   const title=document.getElementById('t-title').value.trim();
   if(!title){ toast('⚠️ Digite um título!','e'); return; }
   const subs=document.getElementById('t-subs').value.trim().split('\n').filter(s=>s.trim());
+  const recur=document.getElementById('t-recur').value;
+  let customDays=[];
+  if(recur==='custom'){
+    customDays=[...document.querySelectorAll('#t-custom-days .day-chip.on')].map(c=>parseInt(c.dataset.day));
+    if(!customDays.length){ toast('⚠️ Selecione pelo menos um dia!','e'); return; }
+  }
   if(editTaskId){
     const t=S.tasks.find(t=>t.id===editTaskId);
     if(t){
       t.title=title;t.prio=document.getElementById('t-prio').value;
       t.energy=document.getElementById('t-energy').value;t.date=document.getElementById('t-date').value;
       t.tag=document.getElementById('t-tag').value;t.proj=parseInt(document.getElementById('t-proj').value)||0;
-      t.recur=document.getElementById('t-recur').value;t.status=document.getElementById('t-status').value;
+      t.recur=recur;t.customDays=customDays;t.status=document.getElementById('t-status').value;
       if(subs.length){ t.subs=subs; if(t.subsDone.length!==subs.length) t.subsDone=subs.map(()=>false); }
     }
     toast('✅ Tarefa atualizada!','s');
@@ -1701,7 +1932,7 @@ function saveTask(){
     S.tasks.unshift({id:uid(),title,prio:document.getElementById('t-prio').value,energy:document.getElementById('t-energy').value,done:false,
       date:document.getElementById('t-date').value,tag:document.getElementById('t-tag').value,
       proj:parseInt(document.getElementById('t-proj').value)||0,status:document.getElementById('t-status').value,
-      subs,subsDone:subs.map(()=>false),recur:document.getElementById('t-recur').value});
+      subs,subsDone:subs.map(()=>false),recur,customDays});
     toast('📝 Tarefa criada!','s');
   }
   closeMo('mo-task'); saveState();
@@ -1716,8 +1947,14 @@ function openHabitMo(){
 function saveHabit(){
   const name=document.getElementById('h-name').value.trim();
   if(!name){ toast('⚠️ Digite um nome!','e'); return; }
+  const freq = document.getElementById('h-freq').value;
+  let customDays = [];
+  if(freq==='custom'){
+    customDays = [...document.querySelectorAll('#h-custom-days .day-chip.on')].map(c=>parseInt(c.dataset.day));
+    if(!customDays.length){ toast('⚠️ Selecione pelo menos um dia!','e'); return; }
+  }
   S.habits.push({id:uid(),name,emoji:document.getElementById('h-emoji').value.trim()||'⭐',streak:0,color:selColor,
-    type:document.getElementById('h-type').value,freq:document.getElementById('h-freq').value,
+    type:document.getElementById('h-type').value,freq,customDays,
     doneToday:false,lastDone:'',hist:Array(35).fill(0)});
   toast(`🔁 "${name}" criado!`,'s');
   closeMo('mo-habit'); saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash');
@@ -1840,19 +2077,121 @@ document.getElementById('confirm-mo').addEventListener('keydown',e=>{
 applyTheme();
 updateBadge();
 
-// Apply XP/level from saved state
-// XP init removed
-
 // Ensure projects have milestones array
 S.projects.forEach(p=>{ if(!p.milestones) p.milestones=[]; });
-// Ensure achievements arrays exist
+// Ensure arrays exist
 if(!S.customAch) S.customAch=[];
 if(!S.unlockedAch) S.unlockedAch=[];
 if(!S.unlockedCustomAch) S.unlockedCustomAch=[];
+if(!S.tags) S.tags=[{name:'trabalho',color:'#3b82f6'},{name:'pessoal',color:'#22c55e'},{name:'saúde',color:'#ef4444'},{name:'produtividade',color:'#8b7cf5'}];
+if(!S.dashTagFilter) S.dashTagFilter='';
+if(!S.projView) S.projView='inbox';
 
 saveState();
 renderDash();
 checkAchievements();
+
+// ============================================================
+// CUSTOM DAYS / TAG / PROJ VIEW HELPERS
+// ============================================================
+function toggleDayChip(el){ el.classList.toggle('on'); }
+
+function toggleHabitCustomDays(){
+  const v = document.getElementById('h-freq').value;
+  document.getElementById('h-custom-days-wrap').style.display = v==='custom'?'block':'none';
+}
+
+function toggleTaskCustomDays(){
+  const v = document.getElementById('t-recur').value;
+  document.getElementById('t-custom-days-wrap').style.display = v==='custom'?'block':'none';
+}
+
+// Tag manager
+function openTagManager(){ 
+  renderTagList();
+  openMo('mo-tags'); 
+  setTimeout(()=>document.getElementById('new-tag-name').focus(),100);
+}
+
+function renderTagList(){
+  if(!S.tags) S.tags=[];
+  const el = document.getElementById('tag-list');
+  if(!el) return;
+  el.innerHTML = S.tags.length ? S.tags.map((t,i)=>
+    `<div class="tag-pill" style="background:${t.color}22;color:${t.color};">
+      🏷️ ${esc(t.name)}
+      <span class="tag-x" onclick="removeTag(${i});event.stopPropagation();">✕</span>
+    </div>`
+  ).join('') : '<span style="font-size:12px;color:var(--tx3);">Nenhuma tag criada.</span>';
+}
+
+function addTag(){
+  const name = document.getElementById('new-tag-name').value.trim().toLowerCase();
+  if(!name){ toast('⚠️ Digite um nome!','e'); return; }
+  if(!S.tags) S.tags=[];
+  if(S.tags.some(t=>t.name===name)){ toast('⚠️ Tag já existe!','e'); return; }
+  const color = document.getElementById('new-tag-color').value;
+  S.tags.push({name, color});
+  document.getElementById('new-tag-name').value='';
+  saveState(); renderTagList(); 
+  toast(`🏷️ Tag "${name}" criada!`,'s');
+  // Update tag input datalist if on dash
+  renderDashTagFilter();
+}
+
+function removeTag(i){
+  if(!S.tags) return;
+  const name = S.tags[i].name;
+  S.tags.splice(i,1);
+  if(S.dashTagFilter===name) S.dashTagFilter='';
+  saveState(); renderTagList(); renderDashTagFilter();
+  toast('🗑 Tag removida','i');
+}
+
+function renderDashTagFilter(){
+  if(!S.tags) S.tags=[];
+  const el = document.getElementById('d-tag-filter');
+  if(!el) return;
+  // Get all unique tags from tasks + defined tags
+  const allTags = new Set(S.tags.map(t=>t.name));
+  S.tasks.forEach(t=>{ if(t.tag) allTags.add(t.tag); });
+  const tags = [...allTags];
+  if(!tags.length){ el.innerHTML=''; return; }
+  el.innerHTML = `<div class="dash-tag-btn ${!S.dashTagFilter?'on':''}" onclick="setDashTagFilter('')">Todas</div>` +
+    tags.map(t=>{
+      const def = S.tags.find(d=>d.name===t);
+      const color = def?def.color:'var(--tx3)';
+      return `<div class="dash-tag-btn ${S.dashTagFilter===t?'on':''}" onclick="setDashTagFilter('${esc(t)}')" style="${S.dashTagFilter===t?`background:${color}22;border-color:${color};color:${color};`:''}">🏷️ ${esc(t)}</div>`;
+    }).join('');
+}
+
+function setDashTagFilter(tag){
+  S.dashTagFilter = tag;
+  saveState();
+  renderDash();
+}
+
+// Update habit freq display
+function freqLabel(h){
+  if(h.freq==='daily') return 'Diário';
+  if(h.freq==='weekly') return 'Semanal';
+  if(h.freq==='custom' && h.customDays){
+    const dl=['D','S','T','Q','Q','S','S'];
+    return h.customDays.map(d=>dl[d]).join(', ');
+  }
+  return h.freq;
+}
+
+// Update task recur display
+function recurLabel(r, customDays){
+  if(r==='daily') return 'Diário';
+  if(r==='weekly') return 'Semanal';
+  if(r==='custom' && customDays){
+    const dl=['D','S','T','Q','Q','S','S'];
+    return customDays.map(d=>dl[d]).join(', ');
+  }
+  return r;
+}
 </script>
 </body>
 </html>
