@@ -998,7 +998,11 @@ function renderDash(){
   const strEl = document.getElementById('d-str');
   if(strEl) strEl.textContent = S.streak;
 
-  const todayT = S.tasks.filter(t=>t.date===TODAY||!t.date);
+  // Tag filter
+  renderDashTagFilter();
+  const tagF = S.dashTagFilter || '';
+
+  const todayT = S.tasks.filter(t=>(t.date===TODAY||!t.date) && (!tagF || t.tag===tagF));
   const doneT = todayT.filter(t=>t.done);
   const tPct = todayT.length ? Math.round(doneT.length/todayT.length*100) : 0;
   const doneH = S.habits.filter(h=>h.doneToday);
