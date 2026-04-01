@@ -1547,13 +1547,12 @@ function toggleTask(id){
   t.done = !t.done;
   if(t.done){
     t.status = 'done_kb';
-    addXP(20);
     // Update week data
     const dow = new Date().getDay();
     const dayIdx = dow===0?6:dow-1;
     S.weekData[dayIdx]++;
     spawnConfetti();
-    toast(`✅ "${t.title.slice(0,28)}" concluída! +20 XP`,'s');
+    toast(`✅ "${t.title.slice(0,28)}" concluída!`,'s');
     checkAchievements();
   } else {
     t.status = 'todo';
