@@ -502,8 +502,20 @@ select.fi option{background:var(--bg3);}
 
     <!-- ===== PROJECTS ===== -->
     <div class="page" id="pg-projects">
-      <div class="sh"><div class="sh-t">Projetos</div><button class="btn btn-p" onclick="openProjMo()">+ Projeto</button></div>
-      <div class="p-kb-w" id="p-kb"></div>
+      <div class="sh">
+        <div class="sh-t">Projetos</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <div class="tabs" style="margin-bottom:0;">
+            <div class="tab on" onclick="switchProjView('inbox',this)">📥 Caixa de entrada</div>
+            <div class="tab" onclick="switchProjView('list',this)">📋 Lista</div>
+            <div class="tab" onclick="switchProjView('kanban',this)">🗂️ Kanban</div>
+          </div>
+          <button class="btn btn-p" onclick="openProjMo()">+ Projeto</button>
+        </div>
+      </div>
+      <div id="p-inbox-w"><div id="p-inbox"></div></div>
+      <div id="p-list-w" style="display:none;"><div id="p-list"></div></div>
+      <div id="p-kb-w" style="display:none;"><div class="p-kb-w" id="p-kb"></div></div>
     </div>
 
     <!-- ===== POMODORO ===== -->
