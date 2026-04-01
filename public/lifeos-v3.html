@@ -1056,7 +1056,7 @@ function renderDash(){
   if(dr) dr.innerHTML = ring(tPct,'var(--grn)','Tarefas',`${doneT.length}/${todayT.length}`)+ring(hPct,'var(--acc)','Hábitos',`${doneH.length}/${S.habits.length}`)+ring(avgG,'var(--amb)','Metas',`${S.goals.length} ativas`);
 
   // Pending
-  const pend = S.tasks.filter(t=>!t.done).slice(0,4);
+  const pend = S.tasks.filter(t=>!t.done && (!tagF || t.tag===tagF)).slice(0,4);
   const dt = document.getElementById('d-tasks');
   if(dt) dt.innerHTML = pend.length ? pend.map(t=>taskHTML(t,true)).join('') : '<div class="empty"><div class="empty-ic">🎉</div><div>Tudo concluído hoje!</div></div>';
 
