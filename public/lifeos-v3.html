@@ -635,7 +635,19 @@ select.fi option{background:var(--bg3);}
     <div class="fg"><label class="fl">Projeto</label><select class="fi" id="t-proj"><option value="0">Sem projeto</option></select></div>
     <div class="fg"><label class="fl">Status (Kanban)</label><select class="fi" id="t-status"><option value="todo">A fazer</option><option value="doing">Em progresso</option><option value="done_kb">Concluído</option></select></div>
     <div class="fg"><label class="fl">Subtarefas (uma por linha)</label><textarea class="fi" id="t-subs" rows="3" placeholder="Pesquisar&#10;Rascunhar&#10;Revisar"></textarea></div>
-    <div class="fg"><label class="fl">Recorrência</label><select class="fi" id="t-recur"><option value="">Sem recorrência</option><option value="daily">Diária</option><option value="weekly">Semanal</option></select></div>
+    <div class="fg"><label class="fl">Recorrência</label><select class="fi" id="t-recur" onchange="toggleTaskCustomDays()"><option value="">Sem recorrência</option><option value="daily">Diária</option><option value="weekly">Semanal</option><option value="custom">Personalizado</option></select></div>
+    <div class="fg" id="t-custom-days-wrap" style="display:none;">
+      <label class="fl">Dias da semana</label>
+      <div class="custom-days" id="t-custom-days">
+        <div class="day-chip" data-day="0" onclick="toggleDayChip(this)">D</div>
+        <div class="day-chip" data-day="1" onclick="toggleDayChip(this)">S</div>
+        <div class="day-chip" data-day="2" onclick="toggleDayChip(this)">T</div>
+        <div class="day-chip" data-day="3" onclick="toggleDayChip(this)">Q</div>
+        <div class="day-chip" data-day="4" onclick="toggleDayChip(this)">Q</div>
+        <div class="day-chip" data-day="5" onclick="toggleDayChip(this)">S</div>
+        <div class="day-chip" data-day="6" onclick="toggleDayChip(this)">S</div>
+      </div>
+    </div>
     <div class="mo-act"><button class="btn btn-g" onclick="closeMo('mo-task')">Cancelar</button><button class="btn btn-p" onclick="saveTask()">Salvar</button></div>
   </div>
 </div>
