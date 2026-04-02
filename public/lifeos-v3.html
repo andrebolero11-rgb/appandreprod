@@ -1301,7 +1301,7 @@ function projCardHTML(p){
   const tsDone=ts.filter(t=>t.done).length;
   const tsPct=ts.length?Math.round(tsDone/ts.length*100):0;
   const combined=ms.length?(Math.round(msPct*.6+tsPct*.4)):tsPct;
-  const statusColors={active:'var(--blu)',paused:'var(--tx3)',done:'var(--grn)'};
+  const statusColors={inbox:'var(--amb)',active:'var(--blu)',paused:'var(--tx3)',done:'var(--grn)'};
   const pfc=statusColors[p.status]||'var(--blu)';
   return {combined, msDone, ms, tsDone, ts, pfc};
 }
