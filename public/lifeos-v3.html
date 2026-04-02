@@ -1217,10 +1217,8 @@ function renderHabits(){
     <div class="sc"><div style="font-size:18px;margin-bottom:6px;">🔥</div><div class="sc-n">${maxStr}</div><div class="sc-l">Maior streak atual</div></div>
     <div class="sc"><div style="font-size:18px;margin-bottom:6px;">📈</div><div class="sc-n">${rate}%</div><div class="sc-l">Conclusão hoje</div></div>`;
 
-  // Build heatmap from real hist
-  const hist = buildCombinedHist();
-  const hm = document.getElementById('heatmap');
-  if(hm) hm.innerHTML = hist.map(v=>`<div class="hc h${Math.min(v,4)}"></div>`).join('');
+  // Build heatmap from real hist with filter
+  renderHeatmap();
 
   const hg = document.getElementById('h-grid');
   if(hg) hg.innerHTML = S.habits.map(h=>{
@@ -1238,12 +1236,46 @@ function renderHabits(){
   }).join('') || '<div class="empty" style="grid-column:span 2"><div class="empty-ic">🔁</div><div>Nenhum hábito criado.</div></div>';
 }
 
-function buildCombinedHist(){
-  if(!S.habits.length) return Array(35).fill(0);
-  const res = Array(35).fill(0);
+let hmFilter = 'week';
+function setHeatmapFilter(f, el){
+  hmFilter = f;
+  document.querySelectorAll('.hm-ftab').forEach(t=>t.classList.remove('on'));
+  if(el) el.classList.add('on');
+  renderHeatmap();
+}
+
+function renderHeatmap(){
+  const days = hmFilter==='week' ? 7 : hmFilter==='month' ? 30 : 90;
+  const hist = buildCombinedHist(days);
+  const hm = document.getElementById('heatmap');
+  if(hm){
+    hm.style.gridTemplateColumns = `repeat(7,1fr)`;
+    hm.innerHTML = hist.map(v=>`<div class="hc h${Math.min(v,4)}"></div>`).join('');
+  }
+  // Day labels
+  const dayLabels = document.getElementById('hm-day-labels');
+  if(dayLabels){
+    const dNames = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    dayLabels.innerHTML = dNames.map(d=>`<div style="text-align:center;font-size:9px;color:var(--tx3);font-weight:600;">${d}</div>`).join('');
+  }
+  // Summary
+  const sumEl = document.getElementById('hm-summary');
+  if(sumEl){
+    const active = hist.filter(v=>v>0).length;
+    const labels = {week:'7 dias',month:'30 dias','3months':'90 dias'};
+    sumEl.textContent = `${active}/${days} dias ativos · ${labels[hmFilter]}`;
+  }
+}
+
+function buildCombinedHist(days){
+  days = days || 35;
+  if(!S.habits.length) return Array(days).fill(0);
+  const res = Array(days).fill(0);
   S.habits.forEach(h=>{
-    const hist = h.hist.slice(-35);
-    hist.forEach((v,i)=>{ if(v>0) res[i]++; });
+    const hist = h.hist.slice(-days);
+    // Pad if shorter
+    const padded = Array(days - hist.length).fill(0).concat(hist);
+    padded.forEach((v,i)=>{ if(v>0) res[i]++; });
   });
   return res.map(v=>Math.min(4,Math.round(v/S.habits.length*4)));
 }
