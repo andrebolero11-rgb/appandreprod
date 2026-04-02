@@ -1276,13 +1276,11 @@ function renderGoals(){
 // PROJECTS — com milestones e progresso real
 // ============================================================
 function renderProjects(){
-  const view = S.projView || 'inbox';
-  document.getElementById('p-inbox-w').style.display = view==='inbox'?'block':'none';
+  const view = S.projView || 'list';
   document.getElementById('p-list-w').style.display = view==='list'?'block':'none';
   document.getElementById('p-kb-w').style.display = view==='kanban'?'block':'none';
 
-  if(view==='inbox') renderProjInbox();
-  else if(view==='list') renderProjList();
+  if(view==='list') renderProjList();
   else renderProjKanban();
 }
 
