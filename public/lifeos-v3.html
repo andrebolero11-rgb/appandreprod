@@ -186,13 +186,18 @@ html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(
 .hcb:active{transform:scale(.98);}
 
 /* ===== HEATMAP ===== */
-.hm{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:10px;}
-.hc{aspect-ratio:1;border-radius:3px;cursor:default;}
+.hm{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px;}
+.hc{aspect-ratio:1;border-radius:5px;cursor:default;transition:all .2s;position:relative;}
+.hc:hover{transform:scale(1.15);z-index:2;}
 .h0{background:var(--bg4);}
-.h1{background:rgba(34,197,94,.2);}
-.h2{background:rgba(34,197,94,.45);}
-.h3{background:rgba(34,197,94,.7);}
-.h4{background:var(--grn);}
+.h1{background:rgba(34,197,94,.2);box-shadow:inset 0 0 0 1px rgba(34,197,94,.15);}
+.h2{background:rgba(34,197,94,.4);box-shadow:inset 0 0 0 1px rgba(34,197,94,.2);}
+.h3{background:rgba(34,197,94,.65);box-shadow:0 0 8px rgba(34,197,94,.2);}
+.h4{background:var(--grn);box-shadow:0 0 12px rgba(34,197,94,.35);}
+.hm-filter-tabs{display:flex;gap:4px;margin-bottom:10px;}
+.hm-ftab{padding:4px 12px;border-radius:99px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--br);background:var(--bg3);color:var(--tx3);transition:all .15s;user-select:none;}
+.hm-ftab.on{background:var(--accg);border-color:var(--acc);color:var(--acc2);}
+.hm-ftab:hover{color:var(--tx);}
 
 /* ===== GOALS ===== */
 .gc{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:18px;border-top:3px solid var(--br);transition:all .2s;}.gc:hover{transform:translateY(-2px);box-shadow:var(--sh);}
@@ -351,13 +356,14 @@ select.fi option{background:var(--bg3);}
 .proj-list-item:hover{border-color:var(--br2);transform:translateY(-1px);box-shadow:var(--sh);}
 .proj-list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
 .proj-list-status{font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;}
+.ps-inbox{background:var(--ambg);color:var(--amb);}
 .ps-active{background:var(--blug);color:var(--blu);}
 .ps-paused{background:var(--bg4);color:var(--tx3);}
 .ps-done{background:var(--grng);color:var(--grn);}
 
 /* ===== CUSTOM DAYS ===== */
 .custom-days{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
-.day-chip{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid var(--br);background:var(--bg3);color:var(--tx3);transition:all .15s;user-select:none;}
+.day-chip{min-width:36px;height:32px;border-radius:99px;display:grid;place-items:center;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid var(--br);background:var(--bg3);color:var(--tx3);transition:all .15s;user-select:none;padding:0 6px;}
 .day-chip.on{background:var(--accg);border-color:var(--acc);color:var(--acc2);}
 
 /* ===== TAG MANAGER ===== */
@@ -493,7 +499,22 @@ select.fi option{background:var(--bg3);}
     <div class="page" id="pg-habits">
       <div class="sh"><div class="sh-t">Hábitos</div><button class="btn btn-p" onclick="openHabitMo()">+ Hábito</button></div>
       <div class="g2 mb14" id="h-stats"></div>
-      <div class="card mb14"><div class="ct">Calendário de consistência — últimas 5 semanas</div><div class="hm" id="heatmap"></div><div style="display:flex;gap:6px;align-items:center;margin-top:8px;"><span style="font-size:10px;color:var(--tx3);">Menos</span><div style="display:flex;gap:2px;"><div class="h0" style="width:11px;height:11px;border-radius:2px;"></div><div class="h1" style="width:11px;height:11px;border-radius:2px;"></div><div class="h2" style="width:11px;height:11px;border-radius:2px;"></div><div class="h3" style="width:11px;height:11px;border-radius:2px;"></div><div class="h4" style="width:11px;height:11px;border-radius:2px;"></div></div><span style="font-size:10px;color:var(--tx3);">Mais</span></div></div>
+      <div class="card mb14">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <div class="ct" style="margin-bottom:0;">Calendário de consistência</div>
+          <div class="hm-filter-tabs">
+            <div class="hm-ftab on" onclick="setHeatmapFilter('week',this)">Semana</div>
+            <div class="hm-ftab" onclick="setHeatmapFilter('month',this)">Mês</div>
+            <div class="hm-ftab" onclick="setHeatmapFilter('3months',this)">3 Meses</div>
+          </div>
+        </div>
+        <div id="hm-day-labels" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;"></div>
+        <div class="hm" id="heatmap"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+          <div style="display:flex;gap:6px;align-items:center;"><span style="font-size:10px;color:var(--tx3);">Menos</span><div style="display:flex;gap:3px;"><div class="h0" style="width:13px;height:13px;border-radius:4px;"></div><div class="h1" style="width:13px;height:13px;border-radius:4px;"></div><div class="h2" style="width:13px;height:13px;border-radius:4px;"></div><div class="h3" style="width:13px;height:13px;border-radius:4px;"></div><div class="h4" style="width:13px;height:13px;border-radius:4px;"></div></div><span style="font-size:10px;color:var(--tx3);">Mais</span></div>
+          <div id="hm-summary" style="font-size:11px;color:var(--tx2);font-weight:600;"></div>
+        </div>
+      </div>
       <div class="g2" id="h-grid"></div>
     </div>
 
@@ -510,15 +531,13 @@ select.fi option{background:var(--bg3);}
         <div class="sh-t">Projetos</div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
           <div class="tabs" style="margin-bottom:0;">
-            <div class="tab on" onclick="switchProjView('inbox',this)">📥 Caixa de entrada</div>
-            <div class="tab" onclick="switchProjView('list',this)">📋 Lista</div>
+            <div class="tab on" onclick="switchProjView('list',this)">📋 Lista</div>
             <div class="tab" onclick="switchProjView('kanban',this)">🗂️ Kanban</div>
           </div>
           <button class="btn btn-p" onclick="openProjMo()">+ Projeto</button>
         </div>
       </div>
-      <div id="p-inbox-w"><div id="p-inbox"></div></div>
-      <div id="p-list-w" style="display:none;"><div id="p-list"></div></div>
+      <div id="p-list-w"><div id="p-list"></div></div>
       <div id="p-kb-w" style="display:none;"><div class="p-kb-w" id="p-kb"></div></div>
     </div>
 
@@ -643,13 +662,13 @@ select.fi option{background:var(--bg3);}
     <div class="fg" id="t-custom-days-wrap" style="display:none;">
       <label class="fl">Dias da semana</label>
       <div class="custom-days" id="t-custom-days">
-        <div class="day-chip" data-day="0" onclick="toggleDayChip(this)">D</div>
-        <div class="day-chip" data-day="1" onclick="toggleDayChip(this)">S</div>
-        <div class="day-chip" data-day="2" onclick="toggleDayChip(this)">T</div>
-        <div class="day-chip" data-day="3" onclick="toggleDayChip(this)">Q</div>
-        <div class="day-chip" data-day="4" onclick="toggleDayChip(this)">Q</div>
-        <div class="day-chip" data-day="5" onclick="toggleDayChip(this)">S</div>
-        <div class="day-chip" data-day="6" onclick="toggleDayChip(this)">S</div>
+        <div class="day-chip" data-day="0" onclick="toggleDayChip(this)">Dom</div>
+        <div class="day-chip" data-day="1" onclick="toggleDayChip(this)">Seg</div>
+        <div class="day-chip" data-day="2" onclick="toggleDayChip(this)">Ter</div>
+        <div class="day-chip" data-day="3" onclick="toggleDayChip(this)">Qua</div>
+        <div class="day-chip" data-day="4" onclick="toggleDayChip(this)">Qui</div>
+        <div class="day-chip" data-day="5" onclick="toggleDayChip(this)">Sex</div>
+        <div class="day-chip" data-day="6" onclick="toggleDayChip(this)">Sáb</div>
       </div>
     </div>
     <div class="mo-act"><button class="btn btn-g" onclick="closeMo('mo-task')">Cancelar</button><button class="btn btn-p" onclick="saveTask()">Salvar</button></div>
@@ -668,13 +687,13 @@ select.fi option{background:var(--bg3);}
     <div class="fg" id="h-custom-days-wrap" style="display:none;">
       <label class="fl">Dias da semana</label>
       <div class="custom-days" id="h-custom-days">
-        <div class="day-chip" data-day="0" onclick="toggleDayChip(this)">D</div>
-        <div class="day-chip" data-day="1" onclick="toggleDayChip(this)">S</div>
-        <div class="day-chip" data-day="2" onclick="toggleDayChip(this)">T</div>
-        <div class="day-chip" data-day="3" onclick="toggleDayChip(this)">Q</div>
-        <div class="day-chip" data-day="4" onclick="toggleDayChip(this)">Q</div>
-        <div class="day-chip" data-day="5" onclick="toggleDayChip(this)">S</div>
-        <div class="day-chip" data-day="6" onclick="toggleDayChip(this)">S</div>
+        <div class="day-chip" data-day="0" onclick="toggleDayChip(this)">Dom</div>
+        <div class="day-chip" data-day="1" onclick="toggleDayChip(this)">Seg</div>
+        <div class="day-chip" data-day="2" onclick="toggleDayChip(this)">Ter</div>
+        <div class="day-chip" data-day="3" onclick="toggleDayChip(this)">Qua</div>
+        <div class="day-chip" data-day="4" onclick="toggleDayChip(this)">Qui</div>
+        <div class="day-chip" data-day="5" onclick="toggleDayChip(this)">Sex</div>
+        <div class="day-chip" data-day="6" onclick="toggleDayChip(this)">Sáb</div>
       </div>
     </div>
     <div class="fg"><label class="fl">Tipo</label><select class="fi" id="h-type"><option value="positive">✅ Positivo (fazer)</option><option value="avoid">🚫 Evitar (não fazer)</option></select></div>
@@ -716,7 +735,7 @@ select.fi option{background:var(--bg3);}
     <div class="mo-ttl">Novo Projeto <button class="mo-x" onclick="closeMo('mo-proj')">×</button></div>
     <div class="fg"><label class="fl">Nome *</label><input class="fi" id="p-name" placeholder="Nome do projeto..." autocomplete="off"></div>
     <div class="fg"><label class="fl">Descrição</label><input class="fi" id="p-desc" placeholder="Breve descrição..."></div>
-    <div class="fg"><label class="fl">Status</label><select class="fi" id="p-status"><option value="active">Em andamento</option><option value="paused">Pausado</option></select></div>
+    <div class="fg"><label class="fl">Status</label><select class="fi" id="p-status"><option value="inbox">Caixa de entrada</option><option value="active">Em andamento</option><option value="paused">Pausado</option></select></div>
     <div class="mo-act"><button class="btn btn-g" onclick="closeMo('mo-proj')">Cancelar</button><button class="btn btn-p" onclick="saveProj()">Salvar</button></div>
   </div>
 </div>
@@ -822,7 +841,7 @@ const DEFAULT_STATE = {
     {name:'produtividade',color:'#8b7cf7'},
   ],
   dashTagFilter:'',
-  projView:'inbox',
+  projView:'list',
 };
 
 const ACHIEVEMENTS_DEF = [
@@ -960,7 +979,8 @@ function taskHTML(t, mini){
     <div class="sub-list">
       ${t.subs.map((s,i)=>`<div class="sub-item">
         <div class="sub-chk ${t.subsDone[i]?'on':''}" onclick="toggleSub(${t.id},${i});event.stopPropagation();">${t.subsDone[i]?'✓':''}</div>
-        <span style="${t.subsDone[i]?'text-decoration:line-through;color:var(--tx3);':''}">${esc(s)}</span>
+        <span style="${t.subsDone[i]?'text-decoration:line-through;color:var(--tx3);':'';flex:1}">${esc(s)}</span>
+        <button onclick="removeSub(${t.id},${i});event.stopPropagation();" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:10px;padding:2px;opacity:.5;transition:opacity .15s;" onmouseover="this.style.opacity=1;this.style.color='var(--red)'" onmouseout="this.style.opacity=.5;this.style.color='var(--tx3)'" title="Remover subtarefa">✕</button>
       </div>`).join('')}
     </div>` : '';
   return `<div class="ti ${t.done?'dn':''}" id="ti-${t.id}">
@@ -1198,10 +1218,8 @@ function renderHabits(){
     <div class="sc"><div style="font-size:18px;margin-bottom:6px;">🔥</div><div class="sc-n">${maxStr}</div><div class="sc-l">Maior streak atual</div></div>
     <div class="sc"><div style="font-size:18px;margin-bottom:6px;">📈</div><div class="sc-n">${rate}%</div><div class="sc-l">Conclusão hoje</div></div>`;
 
-  // Build heatmap from real hist
-  const hist = buildCombinedHist();
-  const hm = document.getElementById('heatmap');
-  if(hm) hm.innerHTML = hist.map(v=>`<div class="hc h${Math.min(v,4)}"></div>`).join('');
+  // Build heatmap from real hist with filter
+  renderHeatmap();
 
   const hg = document.getElementById('h-grid');
   if(hg) hg.innerHTML = S.habits.map(h=>{
@@ -1219,12 +1237,46 @@ function renderHabits(){
   }).join('') || '<div class="empty" style="grid-column:span 2"><div class="empty-ic">🔁</div><div>Nenhum hábito criado.</div></div>';
 }
 
-function buildCombinedHist(){
-  if(!S.habits.length) return Array(35).fill(0);
-  const res = Array(35).fill(0);
+let hmFilter = 'week';
+function setHeatmapFilter(f, el){
+  hmFilter = f;
+  document.querySelectorAll('.hm-ftab').forEach(t=>t.classList.remove('on'));
+  if(el) el.classList.add('on');
+  renderHeatmap();
+}
+
+function renderHeatmap(){
+  const days = hmFilter==='week' ? 7 : hmFilter==='month' ? 30 : 90;
+  const hist = buildCombinedHist(days);
+  const hm = document.getElementById('heatmap');
+  if(hm){
+    hm.style.gridTemplateColumns = `repeat(7,1fr)`;
+    hm.innerHTML = hist.map(v=>`<div class="hc h${Math.min(v,4)}"></div>`).join('');
+  }
+  // Day labels
+  const dayLabels = document.getElementById('hm-day-labels');
+  if(dayLabels){
+    const dNames = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    dayLabels.innerHTML = dNames.map(d=>`<div style="text-align:center;font-size:9px;color:var(--tx3);font-weight:600;">${d}</div>`).join('');
+  }
+  // Summary
+  const sumEl = document.getElementById('hm-summary');
+  if(sumEl){
+    const active = hist.filter(v=>v>0).length;
+    const labels = {week:'7 dias',month:'30 dias','3months':'90 dias'};
+    sumEl.textContent = `${active}/${days} dias ativos · ${labels[hmFilter]}`;
+  }
+}
+
+function buildCombinedHist(days){
+  days = days || 35;
+  if(!S.habits.length) return Array(days).fill(0);
+  const res = Array(days).fill(0);
   S.habits.forEach(h=>{
-    const hist = h.hist.slice(-35);
-    hist.forEach((v,i)=>{ if(v>0) res[i]++; });
+    const hist = h.hist.slice(-days);
+    // Pad if shorter
+    const padded = Array(days - hist.length).fill(0).concat(hist);
+    padded.forEach((v,i)=>{ if(v>0) res[i]++; });
   });
   return res.map(v=>Math.min(4,Math.round(v/S.habits.length*4)));
 }
@@ -1267,8 +1319,11 @@ function renderGoals(){
       <div class="pb" style="margin:10px 0 0;"><div class="pf" style="width:${g.progress}%;background:${pf[g.color]||'var(--acc)'}"></div></div>
       <div style="margin-top:12px;">
         ${g.steps.map((s,i)=>`
-          <div class="gst ${s.done?'dn':''}" onclick="toggleGStep(${g.id},${i})">
-            <div class="sdot ${s.done?'on':''}">${s.done?'✓':''}</div>${esc(s.text)}
+          <div class="gst ${s.done?'dn':''}" style="display:flex;align-items:center;gap:6px;">
+            <div style="flex:1;display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="toggleGStep(${g.id},${i})">
+              <div class="sdot ${s.done?'on':''}">${s.done?'✓':''}</div>${esc(s.text)}
+            </div>
+            <button onclick="removeGStep(${g.id},${i});event.stopPropagation();" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:10px;padding:2px;opacity:.5;transition:opacity .15s;flex-shrink:0;" onmouseover="this.style.opacity=1;this.style.color='var(--red)'" onmouseout="this.style.opacity=.5;this.style.color='var(--tx3)'" title="Remover etapa">✕</button>
           </div>`).join('')}
       </div>
     </div>`).join('') || '<div class="empty" style="grid-column:span 2"><div class="empty-ic">🎯</div><div>Nenhuma meta criada.</div></div>';
@@ -1278,13 +1333,11 @@ function renderGoals(){
 // PROJECTS — com milestones e progresso real
 // ============================================================
 function renderProjects(){
-  const view = S.projView || 'inbox';
-  document.getElementById('p-inbox-w').style.display = view==='inbox'?'block':'none';
+  const view = S.projView || 'list';
   document.getElementById('p-list-w').style.display = view==='list'?'block':'none';
   document.getElementById('p-kb-w').style.display = view==='kanban'?'block':'none';
 
-  if(view==='inbox') renderProjInbox();
-  else if(view==='list') renderProjList();
+  if(view==='list') renderProjList();
   else renderProjKanban();
 }
 
@@ -1305,59 +1358,18 @@ function projCardHTML(p){
   const tsDone=ts.filter(t=>t.done).length;
   const tsPct=ts.length?Math.round(tsDone/ts.length*100):0;
   const combined=ms.length?(Math.round(msPct*.6+tsPct*.4)):tsPct;
-  const statusColors={active:'var(--blu)',paused:'var(--tx3)',done:'var(--grn)'};
+  const statusColors={inbox:'var(--amb)',active:'var(--blu)',paused:'var(--tx3)',done:'var(--grn)'};
   const pfc=statusColors[p.status]||'var(--blu)';
   return {combined, msDone, ms, tsDone, ts, pfc};
 }
 
-function renderProjInbox(){
-  const el = document.getElementById('p-inbox');
-  if(!el) return;
-  // Inbox: all projects, newest first, quick overview
-  const all = [...S.projects].reverse();
-  const statusLabels={active:'Em andamento',paused:'Pausado',done:'Concluído'};
-  const statusCls={active:'ps-active',paused:'ps-paused',done:'ps-done'};
-  el.innerHTML = all.length ? all.map(p=>{
-    const d = projCardHTML(p);
-    return `<div class="proj-list-item">
-      <div class="proj-list-header">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div style="font-weight:700;font-size:14px;">${esc(p.name)}</div>
-          <span class="proj-list-status ${statusCls[p.status]}">${statusLabels[p.status]}</span>
-        </div>
-        <div style="display:flex;gap:5px;">
-          <select onchange="changeProjStatus(${p.id},this.value)" style="padding:4px 7px;border-radius:var(--rs);border:1px solid var(--br);background:var(--bg3);color:var(--tx);font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;">
-            <option value="active" ${p.status==='active'?'selected':''}>Em andamento</option>
-            <option value="paused" ${p.status==='paused'?'selected':''}>Pausado</option>
-            <option value="done" ${p.status==='done'?'selected':''}>Concluído</option>
-          </select>
-          <button onclick="confirmDel('proj',${p.id})" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:12px;" title="Remover">🗑</button>
-        </div>
-      </div>
-      ${p.desc?`<div style="font-size:12px;color:var(--tx2);margin-bottom:8px;">${esc(p.desc)}</div>`:''}
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div style="flex:1;">
-          <div style="font-size:10px;color:var(--tx3);margin-bottom:3px;display:flex;justify-content:space-between;">
-            <span>Progresso</span><strong style="color:${d.pfc}">${d.combined}%</strong>
-          </div>
-          <div class="pb" style="height:6px;margin:0;"><div class="pf" style="width:${d.combined}%;background:${d.pfc};height:100%;"></div></div>
-        </div>
-        <div style="font-size:11px;color:var(--tx3);">${d.msDone}/${d.ms.length} marcos · ${d.tsDone}/${d.ts.length} tarefas</div>
-      </div>
-      <!-- Quick add milestone -->
-      <div style="display:flex;gap:5px;margin-top:8px;">
-        <input class="fi" id="ms-inp-${p.id}" placeholder="+ Adicionar marco..." style="font-size:11px;padding:5px 8px;flex:1;" onkeydown="if(event.key==='Enter')addMilestone(${p.id})">
-        <button class="btn btn-p" style="font-size:11px;padding:5px 10px;" onclick="addMilestone(${p.id})">+</button>
-      </div>
-    </div>`;
-  }).join('') : '<div class="empty"><div class="empty-ic">📥</div><div>Caixa de entrada vazia. Crie um projeto!</div></div>';
-}
+// renderProjInbox removed — inbox is now a Kanban column status
 
 function renderProjList(){
   const el = document.getElementById('p-list');
   if(!el) return;
-  const statusLabels={active:'Em andamento',paused:'Pausado',done:'Concluído'};
-  const statusCls={active:'ps-active',paused:'ps-paused',done:'ps-done'};
+  const statusLabels={inbox:'📥 Caixa de entrada',active:'Em andamento',paused:'Pausado',done:'Concluído'};
+  const statusCls={inbox:'ps-inbox',active:'ps-active',paused:'ps-paused',done:'ps-done'};
   const all = S.projects;
   el.innerHTML = all.length ? all.map(p=>{
     const d = projCardHTML(p);
@@ -1395,6 +1407,7 @@ function renderProjList(){
         <button class="btn btn-p" style="font-size:11px;padding:5px 10px;" onclick="addMilestone(${p.id})">+</button>
       </div>
       <select onchange="changeProjStatus(${p.id},this.value)" style="width:100%;padding:5px 7px;border-radius:var(--rs);border:1px solid var(--br);background:var(--bg3);color:var(--tx);font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:8px;">
+        <option value="inbox" ${p.status==='inbox'?'selected':''}>📥 Caixa de entrada</option>
         <option value="active" ${p.status==='active'?'selected':''}>Em andamento</option>
         <option value="paused" ${p.status==='paused'?'selected':''}>Pausado</option>
         <option value="done" ${p.status==='done'?'selected':''}>Concluído</option>
@@ -1405,6 +1418,7 @@ function renderProjList(){
 
 function renderProjKanban(){
   const statuses=[
+    {id:'inbox',label:'📥 Caixa de entrada',color:'var(--amb)'},
     {id:'active',label:'Em andamento',color:'var(--blu)'},
     {id:'paused',label:'Pausados',color:'var(--tx3)'},
     {id:'done',label:'Concluídos',color:'var(--grn)'},
@@ -1448,6 +1462,7 @@ function renderProjKanban(){
             <button class="btn btn-p" style="font-size:11px;padding:5px 10px;" onclick="addMilestone(${p.id})">+</button>
           </div>
           <select onchange="changeProjStatus(${p.id},this.value)" style="width:100%;padding:5px 7px;border-radius:var(--rs);border:1px solid var(--br);background:var(--bg3);color:var(--tx);font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;">
+            <option value="inbox" ${p.status==='inbox'?'selected':''}>📥 Caixa de entrada</option>
             <option value="active" ${p.status==='active'?'selected':''}>Em andamento</option>
             <option value="paused" ${p.status==='paused'?'selected':''}>Pausado</option>
             <option value="done" ${p.status==='done'?'selected':''}>Concluído</option>
@@ -1787,6 +1802,14 @@ function toggleSub(tid, si){
   saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash');
 }
 
+function removeSub(tid, si){
+  const t = S.tasks.find(t=>t.id===tid); if(!t) return;
+  t.subs.splice(si,1);
+  t.subsDone.splice(si,1);
+  toast('🗑 Subtarefa removida','i');
+  saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash');
+}
+
 function toggleHabit(id){
   const h = S.habits.find(h=>h.id===id); if(!h) return;
   h.doneToday = !h.doneToday;
@@ -1810,6 +1833,15 @@ function toggleGStep(gid, si){
   const dn = g.steps.filter(s=>s.done).length;
   g.progress = g.steps.length ? Math.round(dn/g.steps.length*100) : 0;
   if(g.steps[si].done){ toast(`🎯 Etapa concluída!`,'s'); checkAchievements(); }
+  saveState(); renderGoals();
+}
+
+function removeGStep(gid, si){
+  const g = S.goals.find(g=>g.id===gid); if(!g) return;
+  g.steps.splice(si,1);
+  const dn = g.steps.filter(s=>s.done).length;
+  g.progress = g.steps.length ? Math.round(dn/g.steps.length*100) : 0;
+  toast('🗑 Etapa removida','i');
   saveState(); renderGoals();
 }
 
@@ -2085,7 +2117,7 @@ if(!S.unlockedAch) S.unlockedAch=[];
 if(!S.unlockedCustomAch) S.unlockedCustomAch=[];
 if(!S.tags) S.tags=[{name:'trabalho',color:'#3b82f6'},{name:'pessoal',color:'#22c55e'},{name:'saúde',color:'#ef4444'},{name:'produtividade',color:'#8b7cf5'}];
 if(!S.dashTagFilter) S.dashTagFilter='';
-if(!S.projView) S.projView='inbox';
+if(!S.projView) S.projView='list';
 
 saveState();
 renderDash();
