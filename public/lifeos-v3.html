@@ -1746,6 +1746,14 @@ function toggleSub(tid, si){
   saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash');
 }
 
+function removeSub(tid, si){
+  const t = S.tasks.find(t=>t.id===tid); if(!t) return;
+  t.subs.splice(si,1);
+  t.subsDone.splice(si,1);
+  toast('🗑 Subtarefa removida','i');
+  saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash');
+}
+
 function toggleHabit(id){
   const h = S.habits.find(h=>h.id===id); if(!h) return;
   h.doneToday = !h.doneToday;
