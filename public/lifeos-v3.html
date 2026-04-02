@@ -1405,6 +1405,7 @@ function renderProjKanban(){
             <button class="btn btn-p" style="font-size:11px;padding:5px 10px;" onclick="addMilestone(${p.id})">+</button>
           </div>
           <select onchange="changeProjStatus(${p.id},this.value)" style="width:100%;padding:5px 7px;border-radius:var(--rs);border:1px solid var(--br);background:var(--bg3);color:var(--tx);font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;">
+            <option value="inbox" ${p.status==='inbox'?'selected':''}>📥 Caixa de entrada</option>
             <option value="active" ${p.status==='active'?'selected':''}>Em andamento</option>
             <option value="paused" ${p.status==='paused'?'selected':''}>Pausado</option>
             <option value="done" ${p.status==='done'?'selected':''}>Concluído</option>
