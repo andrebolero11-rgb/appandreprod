@@ -1311,8 +1311,8 @@ function projCardHTML(p){
 function renderProjList(){
   const el = document.getElementById('p-list');
   if(!el) return;
-  const statusLabels={active:'Em andamento',paused:'Pausado',done:'Concluído'};
-  const statusCls={active:'ps-active',paused:'ps-paused',done:'ps-done'};
+  const statusLabels={inbox:'📥 Caixa de entrada',active:'Em andamento',paused:'Pausado',done:'Concluído'};
+  const statusCls={inbox:'ps-inbox',active:'ps-active',paused:'ps-paused',done:'ps-done'};
   const all = S.projects;
   el.innerHTML = all.length ? all.map(p=>{
     const d = projCardHTML(p);
