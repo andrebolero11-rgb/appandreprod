@@ -1780,6 +1780,15 @@ function toggleGStep(gid, si){
   saveState(); renderGoals();
 }
 
+function removeGStep(gid, si){
+  const g = S.goals.find(g=>g.id===gid); if(!g) return;
+  g.steps.splice(si,1);
+  const dn = g.steps.filter(s=>s.done).length;
+  g.progress = g.steps.length ? Math.round(dn/g.steps.length*100) : 0;
+  toast('🗑 Etapa removida','i');
+  saveState(); renderGoals();
+}
+
 function changeProjStatus(id, status){
   const p = S.projects.find(p=>p.id===id); if(!p) return;
   p.status = status;
