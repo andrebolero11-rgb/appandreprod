@@ -1306,48 +1306,7 @@ function projCardHTML(p){
   return {combined, msDone, ms, tsDone, ts, pfc};
 }
 
-function renderProjInbox(){
-  const el = document.getElementById('p-inbox');
-  if(!el) return;
-  // Inbox: all projects, newest first, quick overview
-  const all = [...S.projects].reverse();
-  const statusLabels={active:'Em andamento',paused:'Pausado',done:'Concluído'};
-  const statusCls={active:'ps-active',paused:'ps-paused',done:'ps-done'};
-  el.innerHTML = all.length ? all.map(p=>{
-    const d = projCardHTML(p);
-    return `<div class="proj-list-item">
-      <div class="proj-list-header">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div style="font-weight:700;font-size:14px;">${esc(p.name)}</div>
-          <span class="proj-list-status ${statusCls[p.status]}">${statusLabels[p.status]}</span>
-        </div>
-        <div style="display:flex;gap:5px;">
-          <select onchange="changeProjStatus(${p.id},this.value)" style="padding:4px 7px;border-radius:var(--rs);border:1px solid var(--br);background:var(--bg3);color:var(--tx);font-size:10px;font-family:'DM Sans',sans-serif;cursor:pointer;">
-            <option value="active" ${p.status==='active'?'selected':''}>Em andamento</option>
-            <option value="paused" ${p.status==='paused'?'selected':''}>Pausado</option>
-            <option value="done" ${p.status==='done'?'selected':''}>Concluído</option>
-          </select>
-          <button onclick="confirmDel('proj',${p.id})" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:12px;" title="Remover">🗑</button>
-        </div>
-      </div>
-      ${p.desc?`<div style="font-size:12px;color:var(--tx2);margin-bottom:8px;">${esc(p.desc)}</div>`:''}
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div style="flex:1;">
-          <div style="font-size:10px;color:var(--tx3);margin-bottom:3px;display:flex;justify-content:space-between;">
-            <span>Progresso</span><strong style="color:${d.pfc}">${d.combined}%</strong>
-          </div>
-          <div class="pb" style="height:6px;margin:0;"><div class="pf" style="width:${d.combined}%;background:${d.pfc};height:100%;"></div></div>
-        </div>
-        <div style="font-size:11px;color:var(--tx3);">${d.msDone}/${d.ms.length} marcos · ${d.tsDone}/${d.ts.length} tarefas</div>
-      </div>
-      <!-- Quick add milestone -->
-      <div style="display:flex;gap:5px;margin-top:8px;">
-        <input class="fi" id="ms-inp-${p.id}" placeholder="+ Adicionar marco..." style="font-size:11px;padding:5px 8px;flex:1;" onkeydown="if(event.key==='Enter')addMilestone(${p.id})">
-        <button class="btn btn-p" style="font-size:11px;padding:5px 10px;" onclick="addMilestone(${p.id})">+</button>
-      </div>
-    </div>`;
-  }).join('') : '<div class="empty"><div class="empty-ic">📥</div><div>Caixa de entrada vazia. Crie um projeto!</div></div>';
-}
+// renderProjInbox removed — inbox is now a Kanban column status
 
 function renderProjList(){
   const el = document.getElementById('p-list');
