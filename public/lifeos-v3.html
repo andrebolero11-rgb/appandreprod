@@ -1266,8 +1266,11 @@ function renderGoals(){
       <div class="pb" style="margin:10px 0 0;"><div class="pf" style="width:${g.progress}%;background:${pf[g.color]||'var(--acc)'}"></div></div>
       <div style="margin-top:12px;">
         ${g.steps.map((s,i)=>`
-          <div class="gst ${s.done?'dn':''}" onclick="toggleGStep(${g.id},${i})">
-            <div class="sdot ${s.done?'on':''}">${s.done?'✓':''}</div>${esc(s.text)}
+          <div class="gst ${s.done?'dn':''}" style="display:flex;align-items:center;gap:6px;">
+            <div style="flex:1;display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="toggleGStep(${g.id},${i})">
+              <div class="sdot ${s.done?'on':''}">${s.done?'✓':''}</div>${esc(s.text)}
+            </div>
+            <button onclick="removeGStep(${g.id},${i});event.stopPropagation();" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:10px;padding:2px;opacity:.5;transition:opacity .15s;flex-shrink:0;" onmouseover="this.style.opacity=1;this.style.color='var(--red)'" onmouseout="this.style.opacity=.5;this.style.color='var(--tx3)'" title="Remover etapa">✕</button>
           </div>`).join('')}
       </div>
     </div>`).join('') || '<div class="empty" style="grid-column:span 2"><div class="empty-ic">🎯</div><div>Nenhuma meta criada.</div></div>';
