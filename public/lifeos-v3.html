@@ -1956,6 +1956,7 @@ function saveTask(){
     customDays=[...document.querySelectorAll('#t-custom-days .day-chip.on')].map(c=>parseInt(c.dataset.day));
     if(!customDays.length){ toast('⚠️ Selecione pelo menos um dia!','e'); return; }
   }
+  const habitId = parseInt(document.getElementById('t-habit').value)||0;
   if(editTaskId){
     const t=S.tasks.find(t=>t.id===editTaskId);
     if(t){
@@ -1963,6 +1964,7 @@ function saveTask(){
       t.energy=document.getElementById('t-energy').value;t.date=document.getElementById('t-date').value;
       t.tag=document.getElementById('t-tag').value;t.proj=parseInt(document.getElementById('t-proj').value)||0;
       t.recur=recur;t.customDays=customDays;t.status=document.getElementById('t-status').value;
+      t.habitId=habitId;
       if(subs.length){ t.subs=subs; if(t.subsDone.length!==subs.length) t.subsDone=subs.map(()=>false); }
     }
     toast('✅ Tarefa atualizada!','s');
@@ -1970,7 +1972,7 @@ function saveTask(){
     S.tasks.unshift({id:uid(),title,prio:document.getElementById('t-prio').value,energy:document.getElementById('t-energy').value,done:false,
       date:document.getElementById('t-date').value,tag:document.getElementById('t-tag').value,
       proj:parseInt(document.getElementById('t-proj').value)||0,status:document.getElementById('t-status').value,
-      subs,subsDone:subs.map(()=>false),recur,customDays});
+      subs,subsDone:subs.map(()=>false),recur,customDays,habitId});
     toast('📝 Tarefa criada!','s');
   }
   closeMo('mo-task'); saveState();
