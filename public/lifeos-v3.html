@@ -177,9 +177,9 @@ html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(
 .sn{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--amb);line-height:1;}
 .sl{font-size:10px;color:var(--tx3);}
 .hi-dots{display:flex;gap:3px;margin-bottom:10px;}
-.hd{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--br);display:grid;place-items:center;font-size:9px;font-weight:700;transition:all .15s;cursor:default;}
-.hd.on{background:var(--grn);border-color:var(--grn);color:#fff;}
-.hd.td{border-width:2px;border-color:var(--acc);}
+.hd{width:28px;height:28px;border-radius:7px;border:1.5px solid var(--br);display:grid;place-items:center;font-size:10px;font-weight:700;transition:all .2s;cursor:default;position:relative;}
+.hd.on{color:#fff;border-color:transparent;}
+.hd.td{border-width:2.5px;border-color:var(--acc);box-shadow:0 0 8px rgba(99,102,241,.3);}
 .hcb{width:100%;padding:9px;border-radius:var(--rs);border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;transition:all .2s;}
 .hcb.on{background:var(--grng);color:var(--grn);}
 .hcb.off{background:var(--accg);color:var(--acc2);}
@@ -1235,8 +1235,15 @@ function renderHabits(){
         <div class="hi-str"><div class="sn">${h.streak}</div><div class="sl">streak</div></div>
       </div>
       <div style="display:flex;gap:6px;justify-content:center;margin-bottom:2px;">${dayLabels.map((d,i)=>`<div style="width:28px;text-align:center;font-size:9px;color:${i===6?'var(--acc2)':'var(--tx3)'};font-weight:${i===6?700:400};">${d}</div>`).join('')}</div>
-      <div class="hi-dots">${l7.map((v,i)=>`<div class="hd ${v>0?'on':''} ${i===6?'td':''}">${v>0?'✓':''}</div>`).join('')}</div>
-      <div class="pb"><div class="pf" style="width:${Math.min(100,Math.round(h.streak/30*100))}%;background:${h.color}"></div></div>
+      <div class="hi-dots">${l7.map((v,i)=>{
+        const opacity = v>0 ? Math.min(1, 0.35 + v*0.2) : 0;
+        const bg = v>0 ? h.color : 'transparent';
+        return `<div class="hd ${v>0?'on':''} ${i===6?'td':''}" style="${v>0?`background:${bg};opacity:1;`:''}">${v>0?'✓':''}</div>`;
+      }).join('')}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+        <div class="pb" style="flex:1;"><div class="pf" style="width:${Math.min(100,Math.round(l7.filter(v=>v>0).length/7*100))}%;background:${h.color}"></div></div>
+        <span style="font-size:10px;color:${h.color};font-weight:700;">${l7.filter(v=>v>0).length}/7</span>
+      </div>
       <div style="margin-top:8px;"><button class="hcb ${h.doneToday?'on':'off'}" onclick="toggleHabit(${h.id})">${h.doneToday?'✅ Concluído hoje!':'⭕ Marcar como feito'}</button></div>
       <button class="btn btn-r" style="width:100%;font-size:11px;margin-top:6px;" onclick="confirmDel('habit',${h.id})">🗑 Remover hábito</button>
     </div>`;
