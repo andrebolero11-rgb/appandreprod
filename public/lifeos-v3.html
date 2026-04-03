@@ -1240,7 +1240,10 @@ function renderHabits(){
         const bg = v>0 ? h.color : 'transparent';
         return `<div class="hd ${v>0?'on':''} ${i===6?'td':''}" style="${v>0?`background:${bg};opacity:1;`:''}">${v>0?'✓':''}</div>`;
       }).join('')}</div>
-      <div class="pb"><div class="pf" style="width:${Math.min(100,Math.round(h.streak/30*100))}%;background:${h.color}"></div></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+        <div class="pb" style="flex:1;"><div class="pf" style="width:${Math.min(100,Math.round(l7.filter(v=>v>0).length/7*100))}%;background:${h.color}"></div></div>
+        <span style="font-size:10px;color:${h.color};font-weight:700;">${l7.filter(v=>v>0).length}/7</span>
+      </div>
       <div style="margin-top:8px;"><button class="hcb ${h.doneToday?'on':'off'}" onclick="toggleHabit(${h.id})">${h.doneToday?'✅ Concluído hoje!':'⭕ Marcar como feito'}</button></div>
       <button class="btn btn-r" style="width:100%;font-size:11px;margin-top:6px;" onclick="confirmDel('habit',${h.id})">🗑 Remover hábito</button>
     </div>`;
