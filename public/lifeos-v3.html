@@ -1929,7 +1929,6 @@ function openTaskMo(id){
   document.getElementById('t-tag').value = t?t.tag:'';
   document.getElementById('t-subs').value = t&&t.subs?t.subs.join('\n'):'';
   document.getElementById('t-recur').value = t?t.recur:'';
-  // Handle custom days for task
   const showCustom = t && t.recur==='custom';
   document.getElementById('t-custom-days-wrap').style.display = showCustom?'block':'none';
   document.querySelectorAll('#t-custom-days .day-chip').forEach(c=>c.classList.remove('on'));
@@ -1937,6 +1936,12 @@ function openTaskMo(id){
   document.getElementById('t-status').value = t?(t.status||'todo'):'todo';
   updProjSel();
   document.getElementById('t-proj').value = t?t.proj:0;
+  // Populate habit select
+  const hSel = document.getElementById('t-habit');
+  if(hSel){
+    hSel.innerHTML = '<option value="0">Nenhum</option>' + S.habits.map(h=>`<option value="${h.id}">${h.emoji} ${esc(h.name)}</option>`).join('');
+    hSel.value = t&&t.habitId ? t.habitId : 0;
+  }
   openMo('mo-task');
   setTimeout(()=>document.getElementById('t-title').focus(),100);
 }
