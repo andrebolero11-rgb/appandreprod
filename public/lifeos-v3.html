@@ -1225,11 +1225,15 @@ function renderHabits(){
   const hg = document.getElementById('h-grid');
   if(hg) hg.innerHTML = S.habits.map(h=>{
     const l7 = h.hist.slice(-7);
+    const dNames = ['D','S','T','Q','Q','S','S'];
+    const today = new Date().getDay(); // 0=Sun
+    const dayLabels = l7.map((_,i)=>{ const d=(today-6+i+7)%7; return dNames[d]; });
     return `<div class="hi">
       <div class="hi-hd"><div class="hi-ic" style="background:${h.color}22;">${h.emoji}</div>
         <div><div class="hi-nm">${esc(h.name)}</div><div class="hi-tp">${h.type==='positive'?'✅ Positivo':'🚫 Evitar'} · ${typeof freqLabel==='function'?freqLabel(h):(h.freq==='daily'?'Diário':'Semanal')}</div></div>
         <div class="hi-str"><div class="sn">${h.streak}</div><div class="sl">streak</div></div>
       </div>
+      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:2px;">${dayLabels.map((d,i)=>`<div style="width:28px;text-align:center;font-size:9px;color:${i===6?'var(--acc2)':'var(--tx3)'};font-weight:${i===6?700:400};">${d}</div>`).join('')}</div>
       <div class="hi-dots">${l7.map((v,i)=>`<div class="hd ${v>0?'on':''} ${i===6?'td':''}">${v>0?'✓':''}</div>`).join('')}</div>
       <div class="pb"><div class="pf" style="width:${Math.min(100,Math.round(h.streak/30*100))}%;background:${h.color}"></div></div>
       <div style="margin-top:8px;"><button class="hcb ${h.doneToday?'on':'off'}" onclick="toggleHabit(${h.id})">${h.doneToday?'✅ Concluído hoje!':'⭕ Marcar como feito'}</button></div>
