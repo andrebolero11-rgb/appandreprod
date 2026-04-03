@@ -994,6 +994,7 @@ function taskHTML(t, mini){
         ${t.tag?`<span class="tag t-d">#${esc(t.tag)}</span>`:''}
         ${t.date?`<span class="tag ${over?'t-ov':'t-d'}">${over?'⚠️ ':''} ${fmtDate(t.date)}</span>`:''}
         ${t.recur?`<span class="tag t-d">🔄 ${typeof recurLabel==='function'?recurLabel(t.recur,t.customDays):(t.recur==='daily'?'Diário':'Semanal')}</span>`:''}
+        ${t.habitId?`<span class="tag t-d">🔁 ${(()=>{const hb=S.habits.find(h=>h.id===t.habitId);return hb?hb.emoji+' '+esc(hb.name):'Hábito';})()}</span>`:''}
         ${t.subs&&t.subs.length?`<span class="tag t-d">📋 ${t.subsDone.filter(Boolean).length}/${t.subs.length}</span>`:''}
       </div>
       ${subsHTML}
