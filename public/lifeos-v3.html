@@ -679,7 +679,7 @@ select.fi option{background:var(--bg3);}
 <!-- MODAL: HABIT -->
 <div class="mo" id="mo-habit">
   <div class="mo-bx">
-    <div class="mo-ttl">Novo Hábito <button class="mo-x" onclick="closeMo('mo-habit')">×</button></div>
+    <div class="mo-ttl"><span id="mo-h-ttl">Novo Hábito</span> <button class="mo-x" onclick="closeMo('mo-habit')">×</button></div>
     <div class="fg"><label class="fl">Nome *</label><input class="fi" id="h-name" placeholder="Meditação, Treino, Leitura..." autocomplete="off"></div>
     <div class="fr">
       <div class="fg"><label class="fl">Emoji</label><input class="fi" id="h-emoji" placeholder="🧘" maxlength="2"></div>
@@ -733,10 +733,10 @@ select.fi option{background:var(--bg3);}
 <!-- MODAL: PROJECT -->
 <div class="mo" id="mo-proj">
   <div class="mo-bx">
-    <div class="mo-ttl">Novo Projeto <button class="mo-x" onclick="closeMo('mo-proj')">×</button></div>
+    <div class="mo-ttl"><span id="mo-p-ttl">Novo Projeto</span> <button class="mo-x" onclick="closeMo('mo-proj')">×</button></div>
     <div class="fg"><label class="fl">Nome *</label><input class="fi" id="p-name" placeholder="Nome do projeto..." autocomplete="off"></div>
     <div class="fg"><label class="fl">Descrição</label><input class="fi" id="p-desc" placeholder="Breve descrição..."></div>
-    <div class="fg"><label class="fl">Status</label><select class="fi" id="p-status"><option value="inbox">Caixa de entrada</option><option value="active">Em andamento</option><option value="paused">Pausado</option></select></div>
+    <div class="fg"><label class="fl">Status</label><select class="fi" id="p-status"><option value="inbox">Caixa de entrada</option><option value="active">Em andamento</option><option value="paused">Pausado</option><option value="done">Concluído</option></select></div>
     <div class="mo-act"><button class="btn btn-g" onclick="closeMo('mo-proj')">Cancelar</button><button class="btn btn-p" onclick="saveProj()">Salvar</button></div>
   </div>
 </div>
@@ -864,6 +864,8 @@ const ACHIEVEMENTS_DEF = [
 // ============================================================
 let S = loadState();
 let editTaskId = null;
+let editHabitId = null;
+let editProjId = null;
 let selColor = '#7c6ef5';
 let tFilter = 'all';
 let gFilter = 'all';
@@ -1210,6 +1212,17 @@ function kbDrop(e,colId){
 // ============================================================
 // HABITS — real streak logic
 // ============================================================
+function getHabitWeek(h){
+  const todayIdx = new Date().getDay();
+  const hist = Array.isArray(h.hist) ? h.hist : [];
+  const week = Array(7).fill(null);
+  for(let i=0;i<=todayIdx;i++){
+    const histIdx = hist.length - 1 - (todayIdx - i);
+    week[i] = histIdx >= 0 ? hist[histIdx] : 0;
+  }
+  return week;
+}
+
 function renderHabits(){
   resetHabitsIfNewDay();
   const doneH = S.habits.filter(h=>h.doneToday);
@@ -1225,27 +1238,31 @@ function renderHabits(){
 
   const hg = document.getElementById('h-grid');
   if(hg) hg.innerHTML = S.habits.map(h=>{
-    const l7 = h.hist.slice(-7);
+    const week = getHabitWeek(h);
     const dNames = ['D','S','T','Q','Q','S','S'];
-    const today = new Date().getDay(); // 0=Sun
-    const dayLabels = l7.map((_,i)=>{ const d=(today-6+i+7)%7; return dNames[d]; });
+    const today = new Date().getDay();
+    const doneThisWeek = week.filter(v=>v>0).length;
+    const elapsedDays = today + 1;
     return `<div class="hi">
       <div class="hi-hd"><div class="hi-ic" style="background:${h.color}22;">${h.emoji}</div>
         <div><div class="hi-nm">${esc(h.name)}</div><div class="hi-tp">${h.type==='positive'?'✅ Positivo':'🚫 Evitar'} · ${typeof freqLabel==='function'?freqLabel(h):(h.freq==='daily'?'Diário':'Semanal')}</div></div>
         <div class="hi-str"><div class="sn">${h.streak}</div><div class="sl">streak</div></div>
       </div>
-      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:2px;">${dayLabels.map((d,i)=>`<div style="width:28px;text-align:center;font-size:9px;color:${i===6?'var(--acc2)':'var(--tx3)'};font-weight:${i===6?700:400};">${d}</div>`).join('')}</div>
-      <div class="hi-dots">${l7.map((v,i)=>{
-        const opacity = v>0 ? Math.min(1, 0.35 + v*0.2) : 0;
-        const bg = v>0 ? h.color : 'transparent';
-        return `<div class="hd ${v>0?'on':''} ${i===6?'td':''}" style="${v>0?`background:${bg};opacity:1;`:''}">${v>0?'✓':''}</div>`;
+      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:2px;">${dNames.map((d,i)=>`<div style="width:28px;text-align:center;font-size:9px;color:${i===today?'var(--acc2)':'var(--tx3)'};font-weight:${i===today?700:400};">${d}</div>`).join('')}</div>
+      <div class="hi-dots">${week.map((v,i)=>{
+        const isDone = v>0;
+        const isFuture = v===null;
+        return `<div class="hd ${isDone?'on':''} ${i===today?'td':''}" style="${isDone?`background:${h.color};`:''}${isFuture?'opacity:.28;':''}">${isDone?'✓':''}</div>`;
       }).join('')}</div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
-        <div class="pb" style="flex:1;"><div class="pf" style="width:${Math.min(100,Math.round(l7.filter(v=>v>0).length/7*100))}%;background:${h.color}"></div></div>
-        <span style="font-size:10px;color:${h.color};font-weight:700;">${l7.filter(v=>v>0).length}/7</span>
+        <div class="pb" style="flex:1;"><div class="pf" style="width:${Math.min(100,Math.round(doneThisWeek/Math.max(elapsedDays,1)*100))}%;background:${h.color}"></div></div>
+        <span style="font-size:10px;color:${h.color};font-weight:700;">${doneThisWeek}/${elapsedDays}</span>
       </div>
       <div style="margin-top:8px;"><button class="hcb ${h.doneToday?'on':'off'}" onclick="toggleHabit(${h.id})">${h.doneToday?'✅ Concluído hoje!':'⭕ Marcar como feito'}</button></div>
-      <button class="btn btn-r" style="width:100%;font-size:11px;margin-top:6px;" onclick="confirmDel('habit',${h.id})">🗑 Remover hábito</button>
+      <div style="display:flex;gap:6px;margin-top:6px;">
+        <button class="btn btn-g" style="flex:1;font-size:11px;" onclick="openHabitMo(${h.id})">✏️ Editar</button>
+        <button class="btn btn-r" style="flex:1;font-size:11px;" onclick="confirmDel('habit',${h.id})">🗑 Remover</button>
+      </div>
     </div>`;
   }).join('') || '<div class="empty" style="grid-column:span 2"><div class="empty-ic">🔁</div><div>Nenhum hábito criado.</div></div>';
 }
@@ -1392,7 +1409,10 @@ function renderProjList(){
           <div style="font-weight:700;font-size:14px;">${esc(p.name)}</div>
           <span class="proj-list-status ${statusCls[p.status]}">${statusLabels[p.status]}</span>
         </div>
-        <button onclick="confirmDel('proj',${p.id})" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:12px;" title="Remover">🗑</button>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button onclick="openProjMo(${p.id})" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:12px;" title="Editar">✏️</button>
+          <button onclick="confirmDel('proj',${p.id})" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:12px;" title="Remover">🗑</button>
+        </div>
       </div>
       ${p.desc?`<div style="font-size:12px;color:var(--tx2);margin-bottom:10px;">${esc(p.desc)}</div>`:''}
       <div style="font-size:10px;color:var(--tx3);margin-bottom:3px;display:flex;justify-content:space-between;">
@@ -1447,7 +1467,10 @@ function renderProjKanban(){
         return `<div class="kb-card" style="cursor:default;">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">
             <div style="font-weight:700;font-size:13px;">${esc(p.name)}</div>
-            <button onclick="confirmDel('proj',${p.id})" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:11px;padding:2px;flex-shrink:0;" title="Remover">🗑</button>
+            <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
+              <button onclick="openProjMo(${p.id})" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:11px;padding:2px;" title="Editar">✏️</button>
+              <button onclick="confirmDel('proj',${p.id})" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:11px;padding:2px;" title="Remover">🗑</button>
+            </div>
           </div>
           <div style="font-size:11px;color:var(--tx2);margin-bottom:8px;">${esc(p.desc)}</div>
           <div style="font-size:10px;color:var(--tx3);margin-bottom:3px;display:flex;justify-content:space-between;">
@@ -1991,9 +2014,20 @@ function saveTask(){
   render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash'); updateBadge();
 }
 
-function openHabitMo(){
+function openHabitMo(id){
   closeMo('mo-add');
-  document.getElementById('h-name').value='';document.getElementById('h-emoji').value='';
+  editHabitId = id||null;
+  const h = id ? S.habits.find(h=>h.id===id) : null;
+  document.getElementById('mo-h-ttl').textContent = h?'Editar Hábito':'Novo Hábito';
+  document.getElementById('h-name').value = h?h.name:'';
+  document.getElementById('h-emoji').value = h?h.emoji:'';
+  document.getElementById('h-freq').value = h?h.freq:'daily';
+  document.getElementById('h-type').value = h?h.type:'positive';
+  selColor = h&&h.color ? h.color : '#7c6ef5';
+  document.querySelectorAll('#h-cp .co').forEach(c=>c.classList.toggle('on', c.dataset.c===selColor));
+  toggleHabitCustomDays();
+  document.querySelectorAll('#h-custom-days .day-chip').forEach(c=>c.classList.remove('on'));
+  if(h && h.freq==='custom' && Array.isArray(h.customDays)) h.customDays.forEach(d=>{ const el=document.querySelector(`#h-custom-days .day-chip[data-day="${d}"]`); if(el) el.classList.add('on'); });
   openMo('mo-habit'); setTimeout(()=>document.getElementById('h-name').focus(),100);
 }
 function saveHabit(){
@@ -2005,10 +2039,23 @@ function saveHabit(){
     customDays = [...document.querySelectorAll('#h-custom-days .day-chip.on')].map(c=>parseInt(c.dataset.day));
     if(!customDays.length){ toast('⚠️ Selecione pelo menos um dia!','e'); return; }
   }
-  S.habits.push({id:uid(),name,emoji:document.getElementById('h-emoji').value.trim()||'⭐',streak:0,color:selColor,
-    type:document.getElementById('h-type').value,freq,customDays,
-    doneToday:false,lastDone:'',hist:Array(35).fill(0)});
-  toast(`🔁 "${name}" criado!`,'s');
+  if(editHabitId){
+    const h = S.habits.find(h=>h.id===editHabitId);
+    if(h){
+      h.name = name;
+      h.emoji = document.getElementById('h-emoji').value.trim()||'⭐';
+      h.color = selColor;
+      h.type = document.getElementById('h-type').value;
+      h.freq = freq;
+      h.customDays = customDays;
+    }
+    toast('✅ Hábito atualizado!','s');
+  } else {
+    S.habits.push({id:uid(),name,emoji:document.getElementById('h-emoji').value.trim()||'⭐',streak:0,color:selColor,
+      type:document.getElementById('h-type').value,freq,customDays,
+      doneToday:false,lastDone:'',hist:Array(35).fill(0)});
+    toast(`🔁 "${name}" criado!`,'s');
+  }
   closeMo('mo-habit'); saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash');
   checkAchievements();
 }
@@ -2031,16 +2078,32 @@ function saveGoal(){
   closeMo('mo-goal'); saveState(); renderGoals(); checkAchievements();
 }
 
-function openProjMo(){
+function openProjMo(id){
   closeMo('mo-add');
-  document.getElementById('p-name').value='';document.getElementById('p-desc').value='';
+  editProjId = id||null;
+  const p = id ? S.projects.find(p=>p.id===id) : null;
+  document.getElementById('mo-p-ttl').textContent = p?'Editar Projeto':'Novo Projeto';
+  document.getElementById('p-name').value = p?p.name:'';
+  document.getElementById('p-desc').value = p?p.desc:'';
+  document.getElementById('p-status').value = p?(p.status||'inbox'):'inbox';
   openMo('mo-proj'); setTimeout(()=>document.getElementById('p-name').focus(),100);
 }
 function saveProj(){
   const name=document.getElementById('p-name').value.trim();
   if(!name){ toast('⚠️ Digite um nome!','e'); return; }
-  S.projects.push({id:uid(),name,desc:document.getElementById('p-desc').value,status:document.getElementById('p-status').value});
-  updProjSel(); toast(`🗂️ "${name}" criado!`,'s');
+  if(editProjId){
+    const p = S.projects.find(p=>p.id===editProjId);
+    if(p){
+      p.name = name;
+      p.desc = document.getElementById('p-desc').value;
+      p.status = document.getElementById('p-status').value;
+    }
+    toast('✅ Projeto atualizado!','s');
+  } else {
+    S.projects.push({id:uid(),name,desc:document.getElementById('p-desc').value,status:document.getElementById('p-status').value});
+    toast(`🗂️ "${name}" criado!`,'s');
+  }
+  updProjSel();
   closeMo('mo-proj'); saveState(); renderProjects();
 }
 
