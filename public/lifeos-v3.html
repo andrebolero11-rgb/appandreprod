@@ -671,6 +671,7 @@ select.fi option{background:var(--bg3);}
         <div class="day-chip" data-day="6" onclick="toggleDayChip(this)">Sáb</div>
       </div>
     </div>
+    <div class="fg"><label class="fl">Hábito vinculado</label><select class="fi" id="t-habit"><option value="0">Nenhum</option></select></div>
     <div class="mo-act"><button class="btn btn-g" onclick="closeMo('mo-task')">Cancelar</button><button class="btn btn-p" onclick="saveTask()">Salvar</button></div>
   </div>
 </div>
@@ -993,6 +994,7 @@ function taskHTML(t, mini){
         ${t.tag?`<span class="tag t-d">#${esc(t.tag)}</span>`:''}
         ${t.date?`<span class="tag ${over?'t-ov':'t-d'}">${over?'⚠️ ':''} ${fmtDate(t.date)}</span>`:''}
         ${t.recur?`<span class="tag t-d">🔄 ${typeof recurLabel==='function'?recurLabel(t.recur,t.customDays):(t.recur==='daily'?'Diário':'Semanal')}</span>`:''}
+        ${t.habitId?`<span class="tag t-d">🔁 ${(()=>{const hb=S.habits.find(h=>h.id===t.habitId);return hb?hb.emoji+' '+esc(hb.name):'Hábito';})()}</span>`:''}
         ${t.subs&&t.subs.length?`<span class="tag t-d">📋 ${t.subsDone.filter(Boolean).length}/${t.subs.length}</span>`:''}
       </div>
       ${subsHTML}
@@ -1224,11 +1226,15 @@ function renderHabits(){
   const hg = document.getElementById('h-grid');
   if(hg) hg.innerHTML = S.habits.map(h=>{
     const l7 = h.hist.slice(-7);
+    const dNames = ['D','S','T','Q','Q','S','S'];
+    const today = new Date().getDay(); // 0=Sun
+    const dayLabels = l7.map((_,i)=>{ const d=(today-6+i+7)%7; return dNames[d]; });
     return `<div class="hi">
       <div class="hi-hd"><div class="hi-ic" style="background:${h.color}22;">${h.emoji}</div>
         <div><div class="hi-nm">${esc(h.name)}</div><div class="hi-tp">${h.type==='positive'?'✅ Positivo':'🚫 Evitar'} · ${typeof freqLabel==='function'?freqLabel(h):(h.freq==='daily'?'Diário':'Semanal')}</div></div>
         <div class="hi-str"><div class="sn">${h.streak}</div><div class="sl">streak</div></div>
       </div>
+      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:2px;">${dayLabels.map((d,i)=>`<div style="width:28px;text-align:center;font-size:9px;color:${i===6?'var(--acc2)':'var(--tx3)'};font-weight:${i===6?700:400};">${d}</div>`).join('')}</div>
       <div class="hi-dots">${l7.map((v,i)=>`<div class="hd ${v>0?'on':''} ${i===6?'td':''}">${v>0?'✓':''}</div>`).join('')}</div>
       <div class="pb"><div class="pf" style="width:${Math.min(100,Math.round(h.streak/30*100))}%;background:${h.color}"></div></div>
       <div style="margin-top:8px;"><button class="hcb ${h.doneToday?'on':'off'}" onclick="toggleHabit(${h.id})">${h.doneToday?'✅ Concluído hoje!':'⭕ Marcar como feito'}</button></div>
@@ -1928,7 +1934,6 @@ function openTaskMo(id){
   document.getElementById('t-tag').value = t?t.tag:'';
   document.getElementById('t-subs').value = t&&t.subs?t.subs.join('\n'):'';
   document.getElementById('t-recur').value = t?t.recur:'';
-  // Handle custom days for task
   const showCustom = t && t.recur==='custom';
   document.getElementById('t-custom-days-wrap').style.display = showCustom?'block':'none';
   document.querySelectorAll('#t-custom-days .day-chip').forEach(c=>c.classList.remove('on'));
@@ -1936,6 +1941,12 @@ function openTaskMo(id){
   document.getElementById('t-status').value = t?(t.status||'todo'):'todo';
   updProjSel();
   document.getElementById('t-proj').value = t?t.proj:0;
+  // Populate habit select
+  const hSel = document.getElementById('t-habit');
+  if(hSel){
+    hSel.innerHTML = '<option value="0">Nenhum</option>' + S.habits.map(h=>`<option value="${h.id}">${h.emoji} ${esc(h.name)}</option>`).join('');
+    hSel.value = t&&t.habitId ? t.habitId : 0;
+  }
   openMo('mo-task');
   setTimeout(()=>document.getElementById('t-title').focus(),100);
 }
@@ -1950,6 +1961,7 @@ function saveTask(){
     customDays=[...document.querySelectorAll('#t-custom-days .day-chip.on')].map(c=>parseInt(c.dataset.day));
     if(!customDays.length){ toast('⚠️ Selecione pelo menos um dia!','e'); return; }
   }
+  const habitId = parseInt(document.getElementById('t-habit').value)||0;
   if(editTaskId){
     const t=S.tasks.find(t=>t.id===editTaskId);
     if(t){
@@ -1957,6 +1969,7 @@ function saveTask(){
       t.energy=document.getElementById('t-energy').value;t.date=document.getElementById('t-date').value;
       t.tag=document.getElementById('t-tag').value;t.proj=parseInt(document.getElementById('t-proj').value)||0;
       t.recur=recur;t.customDays=customDays;t.status=document.getElementById('t-status').value;
+      t.habitId=habitId;
       if(subs.length){ t.subs=subs; if(t.subsDone.length!==subs.length) t.subsDone=subs.map(()=>false); }
     }
     toast('✅ Tarefa atualizada!','s');
@@ -1964,7 +1977,7 @@ function saveTask(){
     S.tasks.unshift({id:uid(),title,prio:document.getElementById('t-prio').value,energy:document.getElementById('t-energy').value,done:false,
       date:document.getElementById('t-date').value,tag:document.getElementById('t-tag').value,
       proj:parseInt(document.getElementById('t-proj').value)||0,status:document.getElementById('t-status').value,
-      subs,subsDone:subs.map(()=>false),recur,customDays});
+      subs,subsDone:subs.map(()=>false),recur,customDays,habitId});
     toast('📝 Tarefa criada!','s');
   }
   closeMo('mo-task'); saveState();
