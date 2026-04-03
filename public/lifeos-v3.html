@@ -1235,7 +1235,11 @@ function renderHabits(){
         <div class="hi-str"><div class="sn">${h.streak}</div><div class="sl">streak</div></div>
       </div>
       <div style="display:flex;gap:6px;justify-content:center;margin-bottom:2px;">${dayLabels.map((d,i)=>`<div style="width:28px;text-align:center;font-size:9px;color:${i===6?'var(--acc2)':'var(--tx3)'};font-weight:${i===6?700:400};">${d}</div>`).join('')}</div>
-      <div class="hi-dots">${l7.map((v,i)=>`<div class="hd ${v>0?'on':''} ${i===6?'td':''}">${v>0?'✓':''}</div>`).join('')}</div>
+      <div class="hi-dots">${l7.map((v,i)=>{
+        const opacity = v>0 ? Math.min(1, 0.35 + v*0.2) : 0;
+        const bg = v>0 ? h.color : 'transparent';
+        return `<div class="hd ${v>0?'on':''} ${i===6?'td':''}" style="${v>0?`background:${bg};opacity:1;`:''}">${v>0?'✓':''}</div>`;
+      }).join('')}</div>
       <div class="pb"><div class="pf" style="width:${Math.min(100,Math.round(h.streak/30*100))}%;background:${h.color}"></div></div>
       <div style="margin-top:8px;"><button class="hcb ${h.doneToday?'on':'off'}" onclick="toggleHabit(${h.id})">${h.doneToday?'✅ Concluído hoje!':'⭕ Marcar como feito'}</button></div>
       <button class="btn btn-r" style="width:100%;font-size:11px;margin-top:6px;" onclick="confirmDel('habit',${h.id})">🗑 Remover hábito</button>
