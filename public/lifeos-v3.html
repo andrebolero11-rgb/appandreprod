@@ -2322,6 +2322,35 @@ function recurLabel(r, customDays){
   }
   return r;
 }
+
+// Sub-habits helpers
+let tempSubHabits = [];
+function addSubHabitInput(){
+  const inp = document.getElementById('h-sub-input');
+  const v = inp.value.trim();
+  if(!v) return;
+  tempSubHabits.push({id:uid(),name:v,doneToday:false});
+  inp.value='';
+  renderSubHabitsList();
+}
+function removeSubHabit(id){
+  tempSubHabits = tempSubHabits.filter(s=>s.id!==id);
+  renderSubHabitsList();
+}
+function renderSubHabitsList(){
+  const el = document.getElementById('h-subs-list');
+  if(!el) return;
+  el.innerHTML = tempSubHabits.map(s=>`<div style="display:flex;align-items:center;gap:6px;padding:4px 8px;background:var(--bg3);border-radius:6px;margin-bottom:4px;font-size:12px;">
+    <span style="flex:1;">• ${esc(s.name)}</span>
+    <button class="btn btn-r" style="padding:2px 6px;font-size:10px;" onclick="removeSubHabit(${s.id})">✕</button>
+  </div>`).join('');
+}
+function toggleSubHabit(habitId, subId){
+  const h = S.habits.find(h=>h.id===habitId);
+  if(!h || !h.subHabits) return;
+  const sub = h.subHabits.find(s=>s.id===subId);
+  if(sub){ sub.doneToday = !sub.doneToday; saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash'); }
+}
 </script>
 </body>
 </html>
