@@ -1223,12 +1223,21 @@ function kbDrop(e,colId){
 // HABITS — real streak logic
 // ============================================================
 function getHabitWeek(h){
-  const todayIdx = new Date().getDay();
+  const todayIdx = new Date().getDay(); // 0=Dom, 1=Seg, ..., 6=Sáb
   const hist = Array.isArray(h.hist) ? h.hist : [];
-  const week = Array(7).fill(null);
-  for(let i=0;i<=todayIdx;i++){
-    const histIdx = hist.length - 1 - (todayIdx - i);
-    week[i] = histIdx >= 0 ? hist[histIdx] : 0;
+  const week = [];
+  for(let i=0;i<7;i++){
+    if(i < todayIdx){
+      // Dias passados desta semana
+      const histIdx = hist.length - 1 - (todayIdx - i);
+      week.push({done: histIdx >= 0 && hist[histIdx] > 0, past: true});
+    } else if(i === todayIdx){
+      // Hoje
+      week.push({done: h.doneToday || false, past: true, isToday: true});
+    } else {
+      // Dias futuros
+      week.push({done: false, past: false});
+    }
   }
   return week;
 }
@@ -1251,18 +1260,16 @@ function renderHabits(){
     const week = getHabitWeek(h);
     const dNames = ['D','S','T','Q','Q','S','S'];
     const today = new Date().getDay();
-    const doneThisWeek = week.filter(v=>v>0).length;
-    const elapsedDays = today + 1;
+    const doneThisWeek = week.filter(d=>d.done).length;
+    const elapsedDays = new Date().getDay() + 1;
     return `<div class="hi">
       <div class="hi-hd"><div class="hi-ic" style="background:${h.color}22;">${h.emoji}</div>
         <div><div class="hi-nm">${esc(h.name)}</div><div class="hi-tp">${h.type==='positive'?'✅ Positivo':'🚫 Evitar'} · ${typeof freqLabel==='function'?freqLabel(h):(h.freq==='daily'?'Diário':'Semanal')}</div></div>
         <div class="hi-str"><div class="sn">${h.streak}</div><div class="sl">streak</div></div>
       </div>
       <div style="display:flex;gap:6px;justify-content:center;margin-bottom:2px;">${dNames.map((d,i)=>`<div style="width:28px;text-align:center;font-size:9px;color:${i===today?'var(--acc2)':'var(--tx3)'};font-weight:${i===today?700:400};">${d}</div>`).join('')}</div>
-      <div class="hi-dots">${week.map((v,i)=>{
-        const isDone = v>0;
-        const isFuture = v===null;
-        return `<div class="hd ${isDone?'on':''} ${i===today?'td':''}" style="${isDone?`background:${h.color};`:''}${isFuture?'opacity:.28;':''}">${isDone?'✓':''}</div>`;
+      <div class="hi-dots">${week.map((d,i)=>{
+        return `<div class="hd ${d.done?'on':''} ${d.isToday?'td':''}" style="${d.done?`background:${h.color};color:#fff;`:''}${!d.past?'opacity:.35;border-style:dashed;':''}">${d.done?'✓':''}</div>`;
       }).join('')}</div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
         <div class="pb" style="flex:1;"><div class="pf" style="width:${Math.min(100,Math.round(doneThisWeek/Math.max(elapsedDays,1)*100))}%;background:${h.color}"></div></div>
