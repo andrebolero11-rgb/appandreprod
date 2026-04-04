@@ -1268,10 +1268,8 @@ function renderHabits(){
         <div class="hi-str"><div class="sn">${h.streak}</div><div class="sl">streak</div></div>
       </div>
       <div style="display:flex;gap:6px;justify-content:center;margin-bottom:2px;">${dNames.map((d,i)=>`<div style="width:28px;text-align:center;font-size:9px;color:${i===today?'var(--acc2)':'var(--tx3)'};font-weight:${i===today?700:400};">${d}</div>`).join('')}</div>
-      <div class="hi-dots">${week.map((v,i)=>{
-        const isDone = v>0;
-        const isFuture = v===null;
-        return `<div class="hd ${isDone?'on':''} ${i===today?'td':''}" style="${isDone?`background:${h.color};`:''}${isFuture?'opacity:.28;':''}">${isDone?'✓':''}</div>`;
+      <div class="hi-dots">${week.map((d,i)=>{
+        return `<div class="hd ${d.done?'on':''} ${d.isToday?'td':''}" style="${d.done?`background:${h.color};color:#fff;`:''}${!d.past?'opacity:.35;border-style:dashed;':''}">${d.done?'✓':''}</div>`;
       }).join('')}</div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
         <div class="pb" style="flex:1;"><div class="pf" style="width:${Math.min(100,Math.round(doneThisWeek/Math.max(elapsedDays,1)*100))}%;background:${h.color}"></div></div>
