@@ -2061,12 +2061,13 @@ function saveHabit(){
       h.type = document.getElementById('h-type').value;
       h.freq = freq;
       h.customDays = customDays;
+      h.subHabits = tempSubHabits;
     }
     toast('✅ Hábito atualizado!','s');
   } else {
     S.habits.push({id:uid(),name,emoji:document.getElementById('h-emoji').value.trim()||'⭐',streak:0,color:selColor,
       type:document.getElementById('h-type').value,freq,customDays,
-      doneToday:false,lastDone:'',hist:Array(35).fill(0)});
+      doneToday:false,lastDone:'',hist:Array(35).fill(0),subHabits:tempSubHabits});
     toast(`🔁 "${name}" criado!`,'s');
   }
   closeMo('mo-habit'); saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash');
