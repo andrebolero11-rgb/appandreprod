@@ -1260,8 +1260,8 @@ function renderHabits(){
     const week = getHabitWeek(h);
     const dNames = ['D','S','T','Q','Q','S','S'];
     const today = new Date().getDay();
-    const doneThisWeek = week.filter(v=>v>0).length;
-    const elapsedDays = today + 1;
+    const doneThisWeek = week.filter(d=>d.done).length;
+    const elapsedDays = new Date().getDay() + 1;
     return `<div class="hi">
       <div class="hi-hd"><div class="hi-ic" style="background:${h.color}22;">${h.emoji}</div>
         <div><div class="hi-nm">${esc(h.name)}</div><div class="hi-tp">${h.type==='positive'?'✅ Positivo':'🚫 Evitar'} · ${typeof freqLabel==='function'?freqLabel(h):(h.freq==='daily'?'Diário':'Semanal')}</div></div>
