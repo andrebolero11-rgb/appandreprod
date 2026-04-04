@@ -697,6 +697,10 @@ select.fi option{background:var(--bg3);}
         <div class="day-chip" data-day="6" onclick="toggleDayChip(this)">Sáb</div>
       </div>
     </div>
+    <div class="fg"><label class="fl">Sub-hábitos</label>
+      <div id="h-subs-list" style="margin-bottom:6px;"></div>
+      <div style="display:flex;gap:6px;"><input class="fi" id="h-sub-input" placeholder="Ex: 10 flexões, 5min respiração..." style="flex:1;"><button class="btn btn-g" type="button" onclick="addSubHabitInput()" style="white-space:nowrap;">+ Sub</button></div>
+    </div>
     <div class="fg"><label class="fl">Tipo</label><select class="fi" id="h-type"><option value="positive">✅ Positivo (fazer)</option><option value="avoid">🚫 Evitar (não fazer)</option></select></div>
     <div class="fg"><label class="fl">Cor</label>
       <div class="cp" id="h-cp">
