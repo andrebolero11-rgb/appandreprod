@@ -1148,6 +1148,11 @@ function renderTasks(){
 function renderTaskList(){
   let tasks = [...S.tasks];
   if(tFilter==='today') tasks=tasks.filter(t=>t.date===TODAY||!t.date);
+  else if(tFilter==='week'){
+    const now=new Date(); const day=now.getDay(); const sun=new Date(now); sun.setDate(now.getDate()-day); sun.setHours(0,0,0,0);
+    const sat=new Date(sun); sat.setDate(sun.getDate()+6); sat.setHours(23,59,59,999);
+    tasks=tasks.filter(t=>{if(!t.date) return true; const d=new Date(t.date+'T12:00:00'); return d>=sun&&d<=sat;});
+  }
   else if(tFilter==='high') tasks=tasks.filter(t=>t.prio==='high');
   else if(tFilter==='overdue') tasks=tasks.filter(t=>isOverdue(t));
   else if(tFilter==='done') tasks=tasks.filter(t=>t.done);
