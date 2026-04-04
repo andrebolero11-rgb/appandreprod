@@ -2300,6 +2300,7 @@ function setDashTagFilter(tag){
 function freqLabel(h){
   if(h.freq==='daily') return 'Diário';
   if(h.freq==='weekly') return 'Semanal';
+  if(h.freq==='monthly') return 'Mensal';
   if(h.freq==='custom' && h.customDays){
     const dl=['D','S','T','Q','Q','S','S'];
     return h.customDays.map(d=>dl[d]).join(', ');
