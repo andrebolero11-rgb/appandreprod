@@ -2038,6 +2038,9 @@ function openHabitMo(id){
   toggleHabitCustomDays();
   document.querySelectorAll('#h-custom-days .day-chip').forEach(c=>c.classList.remove('on'));
   if(h && h.freq==='custom' && Array.isArray(h.customDays)) h.customDays.forEach(d=>{ const el=document.querySelector(`#h-custom-days .day-chip[data-day="${d}"]`); if(el) el.classList.add('on'); });
+  // Sub-habits
+  tempSubHabits = h && Array.isArray(h.subHabits) ? [...h.subHabits] : [];
+  renderSubHabitsList();
   openMo('mo-habit'); setTimeout(()=>document.getElementById('h-name').focus(),100);
 }
 function saveHabit(){
