@@ -486,6 +486,7 @@ select.fi option{background:var(--bg3);}
         <div class="tabs">
           <div class="tab on" onclick="filterT('all',this)">Todas</div>
           <div class="tab" onclick="filterT('today',this)">Hoje</div>
+          <div class="tab" onclick="filterT('week',this)">Semana</div>
           <div class="tab" onclick="filterT('high',this)">Alta prio.</div>
           <div class="tab" onclick="filterT('overdue',this)">Atrasadas</div>
           <div class="tab" onclick="filterT('done',this)">Concluídas</div>
@@ -683,7 +684,7 @@ select.fi option{background:var(--bg3);}
     <div class="fg"><label class="fl">Nome *</label><input class="fi" id="h-name" placeholder="Meditação, Treino, Leitura..." autocomplete="off"></div>
     <div class="fr">
       <div class="fg"><label class="fl">Emoji</label><input class="fi" id="h-emoji" placeholder="🧘" maxlength="2"></div>
-      <div class="fg"><label class="fl">Frequência</label><select class="fi" id="h-freq" onchange="toggleHabitCustomDays()"><option value="daily">Diário</option><option value="weekly">Semanal</option><option value="custom">Personalizado</option></select></div>
+      <div class="fg"><label class="fl">Frequência</label><select class="fi" id="h-freq" onchange="toggleHabitCustomDays()"><option value="daily">Diário</option><option value="weekly">Semanal</option><option value="monthly">Mensal</option><option value="custom">Personalizado</option></select></div>
     </div>
     <div class="fg" id="h-custom-days-wrap" style="display:none;">
       <label class="fl">Dias da semana</label>
@@ -696,6 +697,10 @@ select.fi option{background:var(--bg3);}
         <div class="day-chip" data-day="5" onclick="toggleDayChip(this)">Sex</div>
         <div class="day-chip" data-day="6" onclick="toggleDayChip(this)">Sáb</div>
       </div>
+    </div>
+    <div class="fg"><label class="fl">Sub-hábitos</label>
+      <div id="h-subs-list" style="margin-bottom:6px;"></div>
+      <div style="display:flex;gap:6px;"><input class="fi" id="h-sub-input" placeholder="Ex: 10 flexões, 5min respiração..." style="flex:1;"><button class="btn btn-g" type="button" onclick="addSubHabitInput()" style="white-space:nowrap;">+ Sub</button></div>
     </div>
     <div class="fg"><label class="fl">Tipo</label><select class="fi" id="h-type"><option value="positive">✅ Positivo (fazer)</option><option value="avoid">🚫 Evitar (não fazer)</option></select></div>
     <div class="fg"><label class="fl">Cor</label>
@@ -1143,12 +1148,17 @@ function renderTasks(){
 function renderTaskList(){
   let tasks = [...S.tasks];
   if(tFilter==='today') tasks=tasks.filter(t=>t.date===TODAY||!t.date);
+  else if(tFilter==='week'){
+    const now=new Date(); const day=now.getDay(); const sun=new Date(now); sun.setDate(now.getDate()-day); sun.setHours(0,0,0,0);
+    const sat=new Date(sun); sat.setDate(sun.getDate()+6); sat.setHours(23,59,59,999);
+    tasks=tasks.filter(t=>{if(!t.date) return true; const d=new Date(t.date+'T12:00:00'); return d>=sun&&d<=sat;});
+  }
   else if(tFilter==='high') tasks=tasks.filter(t=>t.prio==='high');
   else if(tFilter==='overdue') tasks=tasks.filter(t=>isOverdue(t));
   else if(tFilter==='done') tasks=tasks.filter(t=>t.done);
   else { tasks=[...tasks.filter(t=>!t.done),...tasks.filter(t=>t.done)]; }
   // sort: overdue first, then by priority
-  if(tFilter==='all'||tFilter==='today'){
+  if(tFilter==='all'||tFilter==='today'||tFilter==='week'){
     const pr={high:0,medium:1,low:2};
     tasks.sort((a,b)=>{
       if(a.done!==b.done) return a.done?1:-1;
@@ -1258,6 +1268,13 @@ function renderHabits(){
         <div class="pb" style="flex:1;"><div class="pf" style="width:${Math.min(100,Math.round(doneThisWeek/Math.max(elapsedDays,1)*100))}%;background:${h.color}"></div></div>
         <span style="font-size:10px;color:${h.color};font-weight:700;">${doneThisWeek}/${elapsedDays}</span>
       </div>
+      ${h.subHabits && h.subHabits.length ? `<div style="margin-top:6px;border-top:1px solid var(--bd);padding-top:6px;">
+        <div style="font-size:10px;color:var(--tx3);margin-bottom:4px;font-weight:600;">Sub-hábitos</div>
+        ${h.subHabits.map(s=>`<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px;cursor:pointer;" onclick="toggleSubHabit(${h.id},${s.id})">
+          <span style="font-size:14px;">${s.doneToday?'✅':'⬜'}</span>
+          <span style="${s.doneToday?'text-decoration:line-through;opacity:.6;':''}">${esc(s.name)}</span>
+        </div>`).join('')}
+      </div>` : ''}
       <div style="margin-top:8px;"><button class="hcb ${h.doneToday?'on':'off'}" onclick="toggleHabit(${h.id})">${h.doneToday?'✅ Concluído hoje!':'⭕ Marcar como feito'}</button></div>
       <div style="display:flex;gap:6px;margin-top:6px;">
         <button class="btn btn-g" style="flex:1;font-size:11px;" onclick="openHabitMo(${h.id})">✏️ Editar</button>
@@ -2028,6 +2045,9 @@ function openHabitMo(id){
   toggleHabitCustomDays();
   document.querySelectorAll('#h-custom-days .day-chip').forEach(c=>c.classList.remove('on'));
   if(h && h.freq==='custom' && Array.isArray(h.customDays)) h.customDays.forEach(d=>{ const el=document.querySelector(`#h-custom-days .day-chip[data-day="${d}"]`); if(el) el.classList.add('on'); });
+  // Sub-habits
+  tempSubHabits = h && Array.isArray(h.subHabits) ? [...h.subHabits] : [];
+  renderSubHabitsList();
   openMo('mo-habit'); setTimeout(()=>document.getElementById('h-name').focus(),100);
 }
 function saveHabit(){
@@ -2048,12 +2068,13 @@ function saveHabit(){
       h.type = document.getElementById('h-type').value;
       h.freq = freq;
       h.customDays = customDays;
+      h.subHabits = tempSubHabits;
     }
     toast('✅ Hábito atualizado!','s');
   } else {
     S.habits.push({id:uid(),name,emoji:document.getElementById('h-emoji').value.trim()||'⭐',streak:0,color:selColor,
       type:document.getElementById('h-type').value,freq,customDays,
-      doneToday:false,lastDone:'',hist:Array(35).fill(0)});
+      doneToday:false,lastDone:'',hist:Array(35).fill(0),subHabits:tempSubHabits});
     toast(`🔁 "${name}" criado!`,'s');
   }
   closeMo('mo-habit'); saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash');
@@ -2290,6 +2311,7 @@ function setDashTagFilter(tag){
 function freqLabel(h){
   if(h.freq==='daily') return 'Diário';
   if(h.freq==='weekly') return 'Semanal';
+  if(h.freq==='monthly') return 'Mensal';
   if(h.freq==='custom' && h.customDays){
     const dl=['D','S','T','Q','Q','S','S'];
     return h.customDays.map(d=>dl[d]).join(', ');
@@ -2306,6 +2328,35 @@ function recurLabel(r, customDays){
     return customDays.map(d=>dl[d]).join(', ');
   }
   return r;
+}
+
+// Sub-habits helpers
+let tempSubHabits = [];
+function addSubHabitInput(){
+  const inp = document.getElementById('h-sub-input');
+  const v = inp.value.trim();
+  if(!v) return;
+  tempSubHabits.push({id:uid(),name:v,doneToday:false});
+  inp.value='';
+  renderSubHabitsList();
+}
+function removeSubHabit(id){
+  tempSubHabits = tempSubHabits.filter(s=>s.id!==id);
+  renderSubHabitsList();
+}
+function renderSubHabitsList(){
+  const el = document.getElementById('h-subs-list');
+  if(!el) return;
+  el.innerHTML = tempSubHabits.map(s=>`<div style="display:flex;align-items:center;gap:6px;padding:4px 8px;background:var(--bg3);border-radius:6px;margin-bottom:4px;font-size:12px;">
+    <span style="flex:1;">• ${esc(s.name)}</span>
+    <button class="btn btn-r" style="padding:2px 6px;font-size:10px;" onclick="removeSubHabit(${s.id})">✕</button>
+  </div>`).join('');
+}
+function toggleSubHabit(habitId, subId){
+  const h = S.habits.find(h=>h.id===habitId);
+  if(!h || !h.subHabits) return;
+  const sub = h.subHabits.find(s=>s.id===subId);
+  if(sub){ sub.doneToday = !sub.doneToday; saveState(); render(document.querySelector('.page.act')?.id?.replace('pg-','')||'dash'); }
 }
 </script>
 </body>
