@@ -1223,12 +1223,21 @@ function kbDrop(e,colId){
 // HABITS — real streak logic
 // ============================================================
 function getHabitWeek(h){
-  const todayIdx = new Date().getDay();
+  const todayIdx = new Date().getDay(); // 0=Dom, 1=Seg, ..., 6=Sáb
   const hist = Array.isArray(h.hist) ? h.hist : [];
-  const week = Array(7).fill(null);
-  for(let i=0;i<=todayIdx;i++){
-    const histIdx = hist.length - 1 - (todayIdx - i);
-    week[i] = histIdx >= 0 ? hist[histIdx] : 0;
+  const week = [];
+  for(let i=0;i<7;i++){
+    if(i < todayIdx){
+      // Dias passados desta semana
+      const histIdx = hist.length - 1 - (todayIdx - i);
+      week.push({done: histIdx >= 0 && hist[histIdx] > 0, past: true});
+    } else if(i === todayIdx){
+      // Hoje
+      week.push({done: h.doneToday || false, past: true, isToday: true});
+    } else {
+      // Dias futuros
+      week.push({done: false, past: false});
+    }
   }
   return week;
 }
