@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Life OS v3</title>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -489,6 +490,7 @@ select.fi option{background:var(--bg3);}
           <div class="tab" onclick="filterT('week',this)">Semana</div>
           <div class="tab" onclick="filterT('high',this)">Alta prio.</div>
           <div class="tab" onclick="filterT('overdue',this)">Atrasadas</div>
+          <div class="tab" onclick="filterT('recur',this)">Recorrentes</div>
           <div class="tab" onclick="filterT('done',this)">Concluídas</div>
         </div>
         <div id="t-list"></div>
@@ -803,7 +805,12 @@ select.fi option{background:var(--bg3);}
 // ============================================================
 // CONSTANTS & DEFAULTS
 // ============================================================
-const TODAY = new Date().toISOString().split('T')[0];
+const getLocalToday = () => {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().split('T')[0];
+};
+const TODAY = getLocalToday();
 const LS_KEY = 'lifeos_v3';
 const LEVEL_XP = 2000;
 
@@ -865,6 +872,40 @@ const ACHIEVEMENTS_DEF = [
 ];
 
 // ============================================================
+// SUPABASE CLOUD SYNC
+// ============================================================
+let supabaseClient = null;
+let currentUserId = null;
+
+window.addEventListener('message', async (event) => {
+  if (event.data && event.data.type === 'INIT_SUPABASE') {
+    if (!supabaseClient) {
+      supabaseClient = supabase.createClient(event.data.url, event.data.key);
+    }
+    currentUserId = event.data.userId;
+    try {
+      const { data, error } = await supabaseClient.from('user_state').select('state_json').eq('user_id', currentUserId).maybeSingle();
+      if (data && data.state_json && Object.keys(data.state_json).length > 0) {
+         S = Object.assign({}, DEFAULT_STATE, data.state_json);
+         saveStateLocal(); // save locally to caching
+         const cp = document.querySelector('.page.act');
+         render(cp ? cp.id.replace('pg-','') : 'dash'); 
+         updateBadge();
+         toast('☁️ Dados sincronizados da nuvem!','s');
+      } else {
+         saveState();
+      }
+    } catch(err) {
+      console.error(err);
+    }
+  }
+});
+
+function saveStateLocal(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){}
+}
+
+// ============================================================
 // STATE — load from localStorage or use defaults
 // ============================================================
 let S = loadState();
@@ -896,7 +937,16 @@ function loadState(){
 }
 
 function saveState(){
-  try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){}
+  saveStateLocal();
+  if (supabaseClient && currentUserId) {
+    supabaseClient.from('user_state').upsert({
+      user_id: currentUserId,
+      state_json: S,
+      updated_at: new Date().toISOString()
+    }).then(({error}) => {
+       if (error) console.error("Cloud Sync Error:", error);
+    });
+  }
 }
 
 function uid(){ return Date.now()*1000 + Math.floor(Math.random()*1000); }
@@ -1155,6 +1205,7 @@ function renderTaskList(){
   }
   else if(tFilter==='high') tasks=tasks.filter(t=>t.prio==='high');
   else if(tFilter==='overdue') tasks=tasks.filter(t=>isOverdue(t));
+  else if(tFilter==='recur') tasks=tasks.filter(t=>t.recur && t.recur !== '');
   else if(tFilter==='done') tasks=tasks.filter(t=>t.done);
   else { tasks=[...tasks.filter(t=>!t.done),...tasks.filter(t=>t.done)]; }
   // sort: overdue first, then by priority

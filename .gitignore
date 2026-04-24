@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+create_user.mjs
+test_supabase.mjs
 
 # Editor directories and files
 .vscode/*
