@@ -1,16 +1,17 @@
-import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
-import { LogOut } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { LogOut, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const navigate = useNavigate();
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
 
+  // 1. Verificar autenticação e carregar estado inicial
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -19,44 +20,69 @@ const Index = () => {
           navigate("/login");
         } else {
           setUser(session.user);
+          
+          // Carregar dados salvos no banco
+          const { data, error } = await supabase
+            .from("user_state")
+            .select("state_json")
+            .eq("user_id", session.user.id)
+            .maybeSingle();
+
+          if (error) {
+            console.error("Erro ao carregar estado:", error);
+          } else if (data && iframeRef.current) {
+            // Enviar dados para o iframe
+            iframeRef.current.contentWindow?.postMessage(
+              { type: "LOAD_STATE", payload: data.state_json },
+              "*"
+            );
+          }
           setLoading(false);
         }
       } catch (error) {
-        console.error("Erro na autenticação:", error);
-        // Mesmo com erro, tentamos liberar a tela para não ficar branca eterna
+        console.error("Erro no carregamento:", error);
         setLoading(false);
       }
     };
-    
+
     checkAuth();
-    
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        navigate("/login");
-      } else {
-        setUser(session.user);
-      }
+      if (!session) navigate("/login");
+      else setUser(session.user);
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  // 2. Ouvir mensagens do iframe para salvar no Supabase
   useEffect(() => {
-    if (user && iframeLoaded && iframeRef.current) {
-      const payload = {
-        type: 'INIT_SUPABASE',
-        url: import.meta.env.VITE_SUPABASE_URL,
-        key: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        userId: user.id
-      };
-      
-      try {
-        iframeRef.current.contentWindow?.postMessage(payload, '*');
-      } catch (e) {
-        console.error("Erro ao comunicar com iframe", e);
+    const handleMessage = async (event: MessageEvent) => {
+      // Sincronizar estado (SAVE_STATE)
+      if (event.data.type === "SAVE_STATE" && user?.id) {
+        const { error } = await supabase
+          .from("user_state")
+          .upsert({ 
+            user_id: user.id, 
+            state_json: event.data.payload,
+            updated_at: new Date().toISOString()
+          });
+
+        if (error) {
+          console.error("Erro ao salvar no Supabase:", error);
+        }
       }
-    }
-  }, [user, iframeLoaded]);
+
+      // Logout vindo de dentro do iframe
+      if (event.data.type === "LOGOUT") {
+        await supabase.auth.signOut();
+        navigate("/login");
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [user, navigate]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -65,6 +91,15 @@ const Index = () => {
 
   const handleIframeLoad = () => {
     setIframeLoaded(true);
+    // Quando o iframe carregar, enviamos as chaves para ele se inicializar sozinho também
+    if (user) {
+      iframeRef.current?.contentWindow?.postMessage({
+        type: 'INIT_SUPABASE',
+        url: import.meta.env.VITE_SUPABASE_URL,
+        key: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        userId: user.id
+      }, '*');
+    }
   };
 
   const iframeSrc = useRef(`/lifeos-v3.html?v=${Date.now()}`);
@@ -74,12 +109,11 @@ const Index = () => {
       <div className="min-h-screen w-full flex items-center justify-center bg-zinc-950 text-white">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-zinc-400 animate-pulse">Carregando sistema...</p>
+          <p className="text-zinc-400 animate-pulse">Sincronizando LifeOS...</p>
         </div>
       </div>
     );
   }
-
 
   return (
     <>
