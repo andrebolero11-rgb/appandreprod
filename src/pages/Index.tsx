@@ -13,11 +13,17 @@ const Index = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/login");
-      } else {
-        setUser(session.user);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          navigate("/login");
+        } else {
+          setUser(session.user);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Erro na autenticação:", error);
+        // Mesmo com erro, tentamos liberar a tela para não ficar branca eterna
         setLoading(false);
       }
     };
@@ -63,7 +69,17 @@ const Index = () => {
 
   const iframeSrc = useRef(`/lifeos-v3.html?v=${Date.now()}`);
 
-  if (loading) return null; // Or a nice spinner
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-zinc-950 text-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-zinc-400 animate-pulse">Carregando sistema...</p>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <>
